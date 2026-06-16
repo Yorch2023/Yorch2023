@@ -352,6 +352,20 @@
 }
 
 
+// === Teacher dashboard: AI activity detail button ===
+.pharos-ai-detail-btn {
+    min-width: 40px;
+    border: none;
+    background: none;
+    border-radius: 0.4rem;
+    transition: background 0.15s;
+
+    &:hover,
+    &:focus {
+        background: lighten($pharos-red, 48%);
+    }
+}
+
 // === Teacher dashboard: AI activity dot indicator ===
 .pharos-ai-dot {
     display: inline-block;
@@ -527,9 +541,13 @@
     &:hover { border-color: $pharos-red; background: lighten($pharos-red, 48%); }
 
     input:checked ~ span { color: $pharos-navy; font-weight: 600; }
-    input:checked + span,
+
+    // Highlight the whole option row when its input is checked.
+    // :has() has broad modern browser support; browsers without it simply
+    // keep the :checked span color/weight cue above as a visible fallback.
     &:has(input:checked) {
-        // Highlight selected option
+        border-color: $pharos-red;
+        background: lighten($pharos-red, 48%);
     }
 }
 
