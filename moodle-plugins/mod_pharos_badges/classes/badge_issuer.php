@@ -113,8 +113,10 @@ class badge_issuer {
 
         $badgeObj->issue($userId, true);
 
-        // Send a Moodle notification to the student.
-        self::notify_badge_earned($courseId, $userId, $level, $badgeName);
+        // Send a Moodle notification to the student, using the localized
+        // display name — $badgeName itself must stay fixed since it is the
+        // lookup key against the admin-configured badge record.
+        self::notify_badge_earned($courseId, $userId, $level, self::badge_display_name_for_level($level));
 
         return true;
     }
@@ -169,6 +171,18 @@ class badge_issuer {
             3 => 'PHAROS N3 — Facilitación crítica',
             default => throw new \coding_exception('Invalid level'),
         };
+    }
+
+    /**
+     * Localized badge name shown to the student in notifications. Distinct
+     * from badge_name_for_level(), which is a fixed lookup key matched
+     * against the admin-configured badge record and must not be translated.
+     */
+    private static function badge_display_name_for_level(int $level): string {
+        if (!array_key_exists($level, self::EVIDENCE_THRESHOLD)) {
+            throw new \coding_exception('Invalid level');
+        }
+        return 'PHAROS N' . $level . ' — ' . get_string("level{$level}_desc", 'mod_pharos_badges');
     }
 
     /**
