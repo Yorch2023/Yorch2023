@@ -93,8 +93,10 @@ function parseActivity(text) {
 // ---- HTML renderer ----------------------------------------------------------
 
 function renderHtml(sections, lang) {
+    const defaultTitle = lang === 'it' ? 'Attività PHAROS-AI' : 'Actividad PHAROS-AI';
+    const printLabel   = lang === 'it' ? '🖨 Stampa / Salva come PDF' : '🖨 Imprimir / Guardar como PDF';
     const title = sections.find(s => s.label.toLowerCase().includes('tít') || s.label.toLowerCase().includes('titol'))
-        ?.body[0] ?? 'Actividad PHAROS-AI';
+        ?.body[0] ?? defaultTitle;
 
     const rows = sections.map(s =>
         `<tr>
@@ -125,7 +127,7 @@ function renderHtml(sections, lang) {
 <body>
 <h1>${escHtml(title)}</h1>
 <p class="no-print" style="font-size:.85rem; color:#555">
-  <button onclick="window.print()">🖨 Imprimir / Guardar como PDF</button>
+  <button onclick="window.print()">${escHtml(printLabel)}</button>
 </p>
 <table>
   <tbody>${rows}</tbody>
@@ -178,7 +180,7 @@ async function buildDocx(sections, lang) {
 
     // Header / footer branding
     const titleSection = sections.find(s => /tít|titol/i.test(s.label));
-    const docTitle = titleSection?.body[0] ?? 'Actividad PHAROS-AI';
+    const docTitle = titleSection?.body[0] ?? (lang === 'it' ? 'Attività PHAROS-AI' : 'Actividad PHAROS-AI');
 
     const doc = new Document({
         creator: 'PHAROS-AI · Erasmus+',
