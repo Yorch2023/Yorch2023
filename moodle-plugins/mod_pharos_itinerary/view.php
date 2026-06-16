@@ -34,9 +34,9 @@ $xpNext     = $thresholds[$progress->level] ?? 250;
 $xpPercent  = (int) min(100, round($progress->xp / $xpNext * 100));
 
 $levelMeta = [
-    1 => ['label' => 'N1 — Fundamentos',         'desc' => get_string('level1_desc', 'mod_pharos_itinerary')],
-    2 => ['label' => 'N2 — IA en la práctica',   'desc' => get_string('level2_desc', 'mod_pharos_itinerary')],
-    3 => ['label' => 'N3 — Facilitación crítica', 'desc' => get_string('level3_desc', 'mod_pharos_itinerary')],
+    1 => ['label' => get_string('level1_label', 'mod_pharos_itinerary'), 'desc' => get_string('level1_desc', 'mod_pharos_itinerary')],
+    2 => ['label' => get_string('level2_label', 'mod_pharos_itinerary'), 'desc' => get_string('level2_desc', 'mod_pharos_itinerary')],
+    3 => ['label' => get_string('level3_label', 'mod_pharos_itinerary'), 'desc' => get_string('level3_desc', 'mod_pharos_itinerary')],
 ];
 
 // Fetch activity assignments from pharos_itinerary_activity for this instance.

@@ -64,3 +64,6 @@ $string['learning_style_examples']   = 'Learns best with concrete examples';
 $string['learning_style_questions']  = 'Learns best by asking questions';
 $string['learning_style_definitions']= 'Prefers precise definitions';
 $string['learning_style_analogies']  = 'Connects better through analogies';
+$string['level1_label']              = 'L1 — Foundations';
+$string['level2_label']              = 'L2 — AI in practice';
+$string['level3_label']              = 'L3 — Critical facilitation';

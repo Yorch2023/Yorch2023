@@ -33,7 +33,11 @@ $level     = 1;
 $xp        = 0;
 $lastSeen  = null;
 $thresholds = [1 => 100, 2 => 250, 3 => 250];
-$levelNames = [1 => 'N1 — Fundamentos', 2 => 'N2 — IA en la práctica', 3 => 'N3 — Facilitación crítica'];
+$levelNames = [
+    1 => get_string('level1_label', 'block_pharos_tutor'),
+    2 => get_string('level2_label', 'block_pharos_tutor'),
+    3 => get_string('level3_label', 'block_pharos_tutor'),
+];
 
 try {
     if ($DB->get_manager()->table_exists('pharos_itinerary_progress') &&

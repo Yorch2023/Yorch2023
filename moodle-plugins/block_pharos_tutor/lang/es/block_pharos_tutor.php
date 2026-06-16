@@ -64,3 +64,6 @@ $string['learning_style_examples']   = 'Aprende mejor con ejemplos concretos';
 $string['learning_style_questions']  = 'Aprende mejor haciendo preguntas';
 $string['learning_style_definitions']= 'Prefiere definiciones precisas';
 $string['learning_style_analogies']  = 'Conecta mejor con analogías';
+$string['level1_label']              = 'N1 — Fundamentos';
+$string['level2_label']              = 'N2 — IA en la práctica';
+$string['level3_label']              = 'N3 — Facilitación crítica';
