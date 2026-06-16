@@ -45,7 +45,7 @@
                     {{#es}}{{^it}}🇪🇸{{/it}}{{/es}}
                     {{^es}}{{#it}}🇮🇹{{/it}}{{/es}}
                 </span>
-                <a href="{{url}}" class="flex-grow-1">{{name}}</a>
+                <a href="{{url}}" class="flex-grow-1"{{#es}}{{^it}} lang="es"{{/it}}{{/es}}{{^es}}{{#it}} lang="it"{{/it}}{{/es}}>{{name}}</a>
             </li>
             {{/forums}}
         </ul>
@@ -124,6 +124,7 @@
                     {{type_label}}
                 </span>
                 <a href="{{url}}"
+                   lang="{{lang}}"
                    target="_blank"
                    rel="noopener noreferrer"
                    aria-label="{{#str}}resource_open, block_pharos_community{{/str}} — {{title}} ({{lang}})">
