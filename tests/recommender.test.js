@@ -101,4 +101,66 @@ describe('POST /api/tutor/recommend', () => {
             .send(body);
         expect(res.status).toBe(200);
     });
+
+    test('rejects negative evidenceCount', async () => {
+        const res = await request(app)
+            .post('/api/tutor/recommend')
+            .set('Authorization', AUTH)
+            .send({ ...validBody, evidenceCount: -1 });
+        expect(res.status).toBe(400);
+    });
+});
+
+describe('POST /api/tutor/recommend — AI response handling', () => {
+    let mockCreate;
+
+    beforeAll(() => {
+        const Anthropic = require('@anthropic-ai/sdk');
+        mockCreate = Anthropic.mock.results[0].value.messages.create;
+    });
+
+    beforeEach(() => {
+        mockCreate.mockClear();
+    });
+
+    test('returns 502 when the AI response is not parseable JSON', async () => {
+        mockCreate.mockResolvedValueOnce({ content: [{ text: 'No puedo ayudarte con eso.' }] });
+
+        const res = await request(app)
+            .post('/api/tutor/recommend')
+            .set('Authorization', AUTH)
+            .send({ ...validBody, userId: 'user-rec-badjson' });
+
+        expect(res.status).toBe(502);
+    });
+
+    test('extracts JSON from a markdown code fence', async () => {
+        mockCreate.mockResolvedValueOnce({
+            content: [{ text: '```json\n' + MOCK_RECOMMENDATION + '\n```' }],
+        });
+
+        const res = await request(app)
+            .post('/api/tutor/recommend')
+            .set('Authorization', AUTH)
+            .send({ ...validBody, userId: 'user-rec-fenced' });
+
+        expect(res.status).toBe(200);
+        expect(res.body.recommendation_type).toBe('next_activity');
+    });
+
+    test('normalizes an unrecognized recommendation_type to "next_activity"', async () => {
+        mockCreate.mockResolvedValueOnce({
+            content: [{ text: JSON.stringify({ recommendation_type: 'bogus_type' }) }],
+        });
+
+        const res = await request(app)
+            .post('/api/tutor/recommend')
+            .set('Authorization', AUTH)
+            .send({ ...validBody, userId: 'user-rec-badtype' });
+
+        expect(res.status).toBe(200);
+        expect(res.body.recommendation_type).toBe('next_activity');
+        expect(res.body.message).toBe('');
+        expect(res.body.suggested_activities).toEqual([]);
+    });
 });
