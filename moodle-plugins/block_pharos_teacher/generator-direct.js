@@ -24,8 +24,10 @@
             e.preventDefault();
             var config = cfg();
 
+            var labels = config.labels || {};
+
             if (!config.ajaxUrl) {
-                errorEl.textContent = 'Error de configuración: PHAROS_GENERATOR_CONFIG no está definido.';
+                errorEl.textContent = labels.configError || 'Error de configuración: PHAROS_GENERATOR_CONFIG no está definido.';
                 errorEl.hidden = false;
                 return;
             }
@@ -55,14 +57,14 @@
                 return res.text().then(function (text) {
                     var body;
                     try { body = JSON.parse(text); } catch (e) {
-                        throw new Error('El servidor devolvió HTML (HTTP ' + res.status + '): ' + text.substring(0, 300));
+                        throw new Error((labels.invalidResponse || 'El servidor devolvió una respuesta inválida') + ' (HTTP ' + res.status + '): ' + text.substring(0, 300));
                     }
                     if (!res.ok || body.error) throw new Error(body.error || 'HTTP ' + res.status);
                     return body;
                 });
             })
             .then(function (body) {
-                if (!body.activity) throw new Error('Respuesta vacía del servidor');
+                if (!body.activity) throw new Error(labels.emptyResponse || 'Respuesta vacía del servidor');
                 result.dataset.activity = body.activity;
                 result.dataset.lang     = data.lang;
                 if (output) output.textContent = body.activity;
@@ -73,7 +75,7 @@
                 result.scrollIntoView({ behavior: 'smooth', block: 'start' });
             })
             .catch(function (err) {
-                errorEl.textContent = err.message || 'Error al generar la actividad.';
+                errorEl.textContent = err.message || labels.generateError || 'Error al generar la actividad.';
                 errorEl.hidden = false;
             })
             .finally(function () {
@@ -87,6 +89,7 @@
 
         function handleExport(format) {
             var config   = cfg();
+            var labels   = config.labels || {};
             var activity = result ? result.dataset.activity : '';
             var lang     = result ? (result.dataset.lang || 'es') : 'es';
             if (!activity) return;
@@ -110,7 +113,7 @@
                 document.body.removeChild(a); URL.revokeObjectURL(url);
             })
             .catch(function (err) {
-                errorEl.textContent = err.message || 'Error al exportar.';
+                errorEl.textContent = err.message || labels.exportError || 'Error al exportar.';
                 errorEl.hidden = false;
             });
         }

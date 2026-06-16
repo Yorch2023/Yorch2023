@@ -125,8 +125,8 @@ Panel de seguimiento del docente y acceso al Generador de actividades IA. El blo
 ### Flujo técnico del generador
 
 ```
-generator.php → AMD activity-generator.js → ajax-generator.php → ai-layer/routes/generator.js
-                                           ↘ ajax-export.php   → ai-layer/routes/generator.js (export)
+generator.php → generator-direct.js → ajax-generator.php → ai-layer/routes/generator.js
+                                     ↘ ajax-export.php   → ai-layer/routes/generator.js (export)
 ```
 
 ### Archivos clave
@@ -137,7 +137,7 @@ generator.php → AMD activity-generator.js → ajax-generator.php → ai-layer/
 | `generator.php` | Página dedicada al generador (requiere `block/pharos_teacher:view`) |
 | `ajax-generator.php` | Proxy: valida sesskey, fuerza userId, llama al middleware generador |
 | `ajax-export.php` | Proxy: reenvía la respuesta binaria (HTML/DOCX) del middleware |
-| `amd/src/activity-generator.js` | Gestión del formulario, fetch de actividad, descarga de exportación |
+| `generator-direct.js` | Gestión del formulario, fetch de actividad, descarga de exportación (script plano, sin AMD) |
 | `amd/src/teacher-dashboard.js` | Interactividad del panel: filtros, tablas de progreso |
 | `templates/teacher_dashboard.mustache` | Vista del panel con tabla de alumnos y alertas |
 | `templates/generator_view.mustache` | Formulario del generador con ARIA live regions |

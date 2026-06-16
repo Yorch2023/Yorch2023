@@ -35,6 +35,13 @@ $jsConfig = json_encode([
     'exportUrl' => $exportUrl,
     'sesskey'   => sesskey(),
     'courseId'  => $courseId,
+    'labels'    => [
+        'configError'     => get_string('generator_config_error', 'block_pharos_teacher'),
+        'invalidResponse' => get_string('generator_invalid_response', 'block_pharos_teacher'),
+        'emptyResponse'   => get_string('generator_empty_response', 'block_pharos_teacher'),
+        'generateError'   => get_string('generator_error', 'block_pharos_teacher'),
+        'exportError'     => get_string('export_error', 'block_pharos_teacher'),
+    ],
 ]);
 
 $PAGE->requires->js(new moodle_url('/blocks/pharos_teacher/generator-direct.js'), true);

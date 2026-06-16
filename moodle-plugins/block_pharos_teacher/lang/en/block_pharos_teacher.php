@@ -101,3 +101,10 @@ $string['ai_detail_no_recent']       = 'No sessions in the last 30 days.';
 $string['error_loading_data']        = 'Error loading data.';
 $string['advisor_typing']            = 'Typing…';
 $string['connection_error']          = 'Connection error. Please try again.';
+
+// Activity generator page (JS strings).
+$string['generator_config_error']    = 'Configuration error: the generator is not available.';
+$string['generator_invalid_response'] = 'The server returned an invalid response';
+$string['generator_empty_response']  = 'Empty response from the server.';
+$string['generator_error']           = 'Error generating the activity.';
+$string['export_error']              = 'Error exporting the activity.';
