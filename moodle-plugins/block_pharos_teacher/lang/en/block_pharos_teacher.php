@@ -90,3 +90,14 @@ $string['analytics_col_evidence']    = 'Evidence';
 $string['analytics_col_risk']        = 'Risk';
 $string['analytics_ai_total_hint']   = 'Total AI sessions';
 $string['analytics_link']            = 'Full learning analytics';
+
+// AI detail modal / advisor chat / motivation generator (JS strings).
+$string['ai_detail_sessions']        = 'Sessions';
+$string['ai_detail_messages']        = 'Messages';
+$string['ai_detail_time']            = 'Time';
+$string['ai_detail_last30d']         = 'Last 30 days:';
+$string['ai_detail_date']            = 'Date';
+$string['ai_detail_no_recent']       = 'No sessions in the last 30 days.';
+$string['error_loading_data']        = 'Error loading data.';
+$string['advisor_typing']            = 'Typing…';
+$string['connection_error']          = 'Connection error. Please try again.';

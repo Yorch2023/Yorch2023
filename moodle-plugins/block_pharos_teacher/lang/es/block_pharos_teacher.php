@@ -87,3 +87,14 @@ $string['analytics_col_evidence']    = 'Evidencias';
 $string['analytics_col_risk']        = 'Riesgo';
 $string['analytics_ai_total_hint']   = 'Total de sesiones IA';
 $string['analytics_link']            = 'Ver analítica completa';
+
+// AI detail modal / advisor chat / motivation generator (JS strings).
+$string['ai_detail_sessions']        = 'Sesiones';
+$string['ai_detail_messages']        = 'Mensajes';
+$string['ai_detail_time']            = 'Tiempo';
+$string['ai_detail_last30d']         = 'Últimas 30 días:';
+$string['ai_detail_date']            = 'Fecha';
+$string['ai_detail_no_recent']       = 'Sin sesiones en los últimos 30 días.';
+$string['error_loading_data']        = 'Error al cargar los datos.';
+$string['advisor_typing']            = 'Escribiendo…';
+$string['connection_error']          = 'Error de conexión. Inténtalo de nuevo.';
