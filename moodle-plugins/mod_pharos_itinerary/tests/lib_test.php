@@ -19,7 +19,7 @@ class mod_pharos_itinerary_lib_test extends advanced_testcase {
         $this->resetAfterTest(true);
     }
 
-    private function createItinerary(): stdClass {
+    private function createItinerary(int $startLevel = 1): stdClass {
         global $DB;
         $generator = $this->getDataGenerator();
         $course    = $generator->create_course();
@@ -27,7 +27,7 @@ class mod_pharos_itinerary_lib_test extends advanced_testcase {
         $record = (object) [
             'course'          => $course->id,
             'name'            => 'Test itinerary',
-            'startlevel'      => 1,
+            'startlevel'      => $startLevel,
             'xp_per_evidence' => 10,
             'timecreated'     => time(),
             'timemodified'    => time(),
@@ -44,6 +44,17 @@ class mod_pharos_itinerary_lib_test extends advanced_testcase {
         $progress = pharos_itinerary_get_or_create_progress($itinerary->id, $user->id);
 
         $this->assertEquals(1, $progress->level);
+        $this->assertEquals(0, $progress->xp);
+    }
+
+    public function test_get_or_create_progress_honours_configured_start_level(): void {
+        $generator  = $this->getDataGenerator();
+        $user       = $generator->create_user();
+        $itinerary  = $this->createItinerary(2);
+
+        $progress = pharos_itinerary_get_or_create_progress($itinerary->id, $user->id);
+
+        $this->assertEquals(2, $progress->level);
         $this->assertEquals(0, $progress->xp);
     }
 

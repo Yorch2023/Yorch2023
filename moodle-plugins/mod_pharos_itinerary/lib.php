@@ -55,10 +55,12 @@ function pharos_itinerary_get_or_create_progress(int $itineraryId, int $userId):
         return $record;
     }
 
+    $startLevel = (int) $DB->get_field('pharos_itinerary', 'startlevel', ['id' => $itineraryId]);
+
     $record = (object) [
         'itineraryid' => $itineraryId,
         'userid'      => $userId,
-        'level'       => 1,
+        'level'       => $startLevel ?: 1,
         'xp'          => 0,
         'timecreated' => time(),
         'timemodified'=> time(),
