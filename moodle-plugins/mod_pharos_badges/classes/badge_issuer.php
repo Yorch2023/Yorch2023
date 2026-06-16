@@ -116,12 +116,12 @@ class badge_issuer {
         // Send a Moodle notification to the student, using the localized
         // display name — $badgeName itself must stay fixed since it is the
         // lookup key against the admin-configured badge record.
-        self::notify_badge_earned($courseId, $userId, $level, self::badge_display_name_for_level($level));
+        self::notify_badge_earned($courseId, $userId, $level);
 
         return true;
     }
 
-    private static function notify_badge_earned(int $courseId, int $userId, int $level, string $badgeName): void {
+    private static function notify_badge_earned(int $courseId, int $userId, int $level): void {
         global $DB;
 
         $student = $DB->get_record('user', ['id' => $userId],
@@ -130,18 +130,23 @@ class badge_issuer {
             return;
         }
 
+        // Notifications must be rendered in the recipient's own language
+        // preference, not the language of whoever triggered the badge issuance.
+        $lang = $student->lang ?: null;
+
         $courseUrl = (new \moodle_url('/course/view.php', ['id' => $courseId]))->out(false);
+        $badgeName = self::badge_display_name_for_level($level, $lang);
 
         $subject = get_string('notify_badge_subject', 'mod_pharos_badges', [
             'badge' => $badgeName,
-        ]);
+        ], $lang);
 
         $body = get_string('notify_badge_body', 'mod_pharos_badges', [
             'name'      => fullname($student),
             'badge'     => $badgeName,
             'level'     => 'N' . $level,
             'courseurl' => $courseUrl,
-        ]);
+        ], $lang);
 
         $msg                    = new \core\message\message();
         $msg->component         = 'mod_pharos_badges';
@@ -155,7 +160,7 @@ class badge_issuer {
         $msg->smallmessage      = $subject;
         $msg->notification      = 1;
         $msg->contexturl        = $courseUrl;
-        $msg->contexturlname    = get_string('pluginname', 'mod_pharos_badges');
+        $msg->contexturlname    = get_string('pluginname', 'mod_pharos_badges', null, $lang);
 
         try {
             message_send($msg);
@@ -178,11 +183,11 @@ class badge_issuer {
      * from badge_name_for_level(), which is a fixed lookup key matched
      * against the admin-configured badge record and must not be translated.
      */
-    private static function badge_display_name_for_level(int $level): string {
+    private static function badge_display_name_for_level(int $level, ?string $lang = null): string {
         if (!array_key_exists($level, self::EVIDENCE_THRESHOLD)) {
             throw new \coding_exception('Invalid level');
         }
-        return 'PHAROS N' . $level . ' — ' . get_string("level{$level}_desc", 'mod_pharos_badges');
+        return 'PHAROS N' . $level . ' — ' . get_string("level{$level}_desc", 'mod_pharos_badges', null, $lang);
     }
 
     /**

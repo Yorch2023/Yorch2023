@@ -180,18 +180,23 @@ class check_dropout_risk extends \core\task\scheduled_task {
 
                     $course = get_course($courseId);
 
+                    // Notifications must be rendered in the recipient teacher's
+                    // own language preference, not the cron task's site-default
+                    // language (there is no "current user" in a scheduled task).
+                    $lang = $teacherRecord->lang ?: null;
+
                     $dashboardUrl = (new \moodle_url('/course/view.php', ['id' => $courseId]))->out(false);
                     $profileUrl   = (new \moodle_url('/user/view.php',
                         ['id' => $studentId, 'course' => $courseId]))->out(false);
 
                     $daysStr = $daysSince !== null
-                        ? get_string('alert_days_inactive', 'block_pharos_teacher', $daysSince)
-                        : get_string('alert_never_active',  'block_pharos_teacher');
+                        ? get_string('alert_days_inactive', 'block_pharos_teacher', $daysSince, $lang)
+                        : get_string('alert_never_active',  'block_pharos_teacher', null, $lang);
 
                     $subject = get_string('alert_subject', 'block_pharos_teacher', [
                         'student' => $studentName,
                         'course'  => format_string($course->fullname),
-                    ]);
+                    ], $lang);
 
                     $bodyText = get_string('alert_body', 'block_pharos_teacher', [
                         'student'    => $studentName,
@@ -200,7 +205,7 @@ class check_dropout_risk extends \core\task\scheduled_task {
                         'days'       => $daysStr,
                         'profileurl' => $profileUrl,
                         'dashboard'  => $dashboardUrl,
-                    ]);
+                    ], $lang);
 
                     $eventdata                     = new \core\message\message();
                     $eventdata->component          = 'block_pharos_teacher';
@@ -214,7 +219,7 @@ class check_dropout_risk extends \core\task\scheduled_task {
                     $eventdata->smallmessage       = $subject;
                     $eventdata->notification       = 1;
                     $eventdata->contexturl         = $dashboardUrl;
-                    $eventdata->contexturlname     = get_string('pluginname', 'block_pharos_teacher');
+                    $eventdata->contexturlname     = get_string('pluginname', 'block_pharos_teacher', null, $lang);
 
                     try {
                         message_send($eventdata);

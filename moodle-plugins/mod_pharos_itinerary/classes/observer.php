@@ -30,10 +30,14 @@ class observer {
             return;
         }
 
+        // Notifications must be rendered in the recipient's own language
+        // preference, not the language of whoever triggered the level-up.
+        $lang = $student->lang ?: null;
+
         $levelNames = [
-            1 => get_string('level1_desc', 'mod_pharos_itinerary'),
-            2 => get_string('level2_desc', 'mod_pharos_itinerary'),
-            3 => get_string('level3_desc', 'mod_pharos_itinerary'),
+            1 => get_string('level1_desc', 'mod_pharos_itinerary', null, $lang),
+            2 => get_string('level2_desc', 'mod_pharos_itinerary', null, $lang),
+            3 => get_string('level3_desc', 'mod_pharos_itinerary', null, $lang),
         ];
 
         $levelLabel = 'N' . $newLevel;
@@ -41,7 +45,7 @@ class observer {
 
         $subject = get_string('notify_level_up_subject', 'mod_pharos_itinerary', [
             'level' => $levelLabel,
-        ]);
+        ], $lang);
 
         $courseId  = $event->get_context()->get_course_context()->instanceid ?? null;
         $courseUrl = $courseId
@@ -53,7 +57,7 @@ class observer {
             'level'     => $levelLabel,
             'leveldesc' => $levelDesc,
             'courseurl' => $courseUrl,
-        ]);
+        ], $lang);
 
         $msg                    = new \core\message\message();
         $msg->component         = 'mod_pharos_itinerary';
@@ -67,7 +71,7 @@ class observer {
         $msg->smallmessage      = $subject;
         $msg->notification      = 1;
         $msg->contexturl        = $courseUrl;
-        $msg->contexturlname    = get_string('pluginname', 'mod_pharos_itinerary');
+        $msg->contexturlname    = get_string('pluginname', 'mod_pharos_itinerary', null, $lang);
 
         try {
             message_send($msg);
