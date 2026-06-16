@@ -57,3 +57,10 @@ $string['welcome_back']                  = 'Continue your itinerary';
 $string['your_level_label']              = 'Current level';
 $string['continue_learning']             = 'Continue learning';
 $string['continue_label']                = 'Continue your PHAROS-AI itinerary';
+
+// Result panel (used by JS — keep in sync with lang/es, lang/it)
+$string['label_recommend']               = 'Your recommended starting level:';
+$string['label_start']                   = 'Start my itinerary';
+
+// Step progress announcement for screen readers
+$string['step_progress']                 = 'Step {$a->current} of {$a->total}';

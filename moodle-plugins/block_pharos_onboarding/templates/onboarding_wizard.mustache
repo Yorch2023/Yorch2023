@@ -22,6 +22,8 @@
      data-sesskey="{{sesskey}}"
      data-lang="{{lang}}"
      data-itinerary-url="{{itinerary_url}}"
+     data-label-recommend="{{#str}}label_recommend, block_pharos_onboarding{{/str}}"
+     data-label-start="{{#str}}label_start, block_pharos_onboarding{{/str}}"
      role="region"
      aria-labelledby="pharos-ob-heading">
 
@@ -37,21 +39,27 @@
 
     {{! Step progress indicator }}
     <div class="pharos-ob-steps d-flex mb-3" role="list" aria-label="{{#str}}steps_label, block_pharos_onboarding{{/str}}">
-        <div class="pharos-ob-step pharos-ob-step--active flex-fill" data-step="1" role="listitem">
+        <div class="pharos-ob-step pharos-ob-step--active flex-fill" data-step="1" role="listitem" aria-current="step"
+             data-announce="{{#str}}step_progress, block_pharos_onboarding, {&quot;current&quot;:1,&quot;total&quot;:3}{{/str}}: {{#str}}step1_short, block_pharos_onboarding{{/str}}">
             <div class="pharos-ob-step__dot"></div>
             <small class="pharos-ob-step__label">{{#str}}step1_short, block_pharos_onboarding{{/str}}</small>
         </div>
         <div class="pharos-ob-step__line flex-fill"></div>
-        <div class="pharos-ob-step flex-fill" data-step="2" role="listitem">
+        <div class="pharos-ob-step flex-fill" data-step="2" role="listitem"
+             data-announce="{{#str}}step_progress, block_pharos_onboarding, {&quot;current&quot;:2,&quot;total&quot;:3}{{/str}}: {{#str}}step2_short, block_pharos_onboarding{{/str}}">
             <div class="pharos-ob-step__dot"></div>
             <small class="pharos-ob-step__label">{{#str}}step2_short, block_pharos_onboarding{{/str}}</small>
         </div>
         <div class="pharos-ob-step__line flex-fill"></div>
-        <div class="pharos-ob-step flex-fill" data-step="3" role="listitem">
+        <div class="pharos-ob-step flex-fill" data-step="3" role="listitem"
+             data-announce="{{#str}}step_progress, block_pharos_onboarding, {&quot;current&quot;:3,&quot;total&quot;:3}{{/str}}: {{#str}}step3_short, block_pharos_onboarding{{/str}}">
             <div class="pharos-ob-step__dot"></div>
             <small class="pharos-ob-step__label">{{#str}}step3_short, block_pharos_onboarding{{/str}}</small>
         </div>
     </div>
+
+    {{! Visually-hidden live region announcing step changes to screen readers }}
+    <div id="pharos-ob-step-announce" class="sr-only" role="status" aria-live="polite"></div>
 
     <form id="pharos-ob-form" novalidate>
 

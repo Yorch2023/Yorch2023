@@ -94,12 +94,22 @@ define([], function () {
             target.classList.remove('d-none');
             target.querySelector('select, input') && target.querySelector('select, input').focus();
         }
-        // Update step dots.
+        // Update step dots and announce the change to screen readers.
+        let announce = '';
         root.querySelectorAll('.pharos-ob-step').forEach(function (dot) {
             const s = parseInt(dot.dataset.step, 10);
-            dot.classList.toggle('pharos-ob-step--active', s === stepNum);
+            const isActive = s === stepNum;
+            dot.classList.toggle('pharos-ob-step--active', isActive);
             dot.classList.toggle('pharos-ob-step--done', s < stepNum);
+            if (isActive) {
+                dot.setAttribute('aria-current', 'step');
+                announce = dot.dataset.announce || '';
+            } else {
+                dot.removeAttribute('aria-current');
+            }
         });
+        const liveRegion = document.getElementById('pharos-ob-step-announce');
+        if (liveRegion) liveRegion.textContent = announce;
     }
 
     function validateStep(root, stepNum) {
