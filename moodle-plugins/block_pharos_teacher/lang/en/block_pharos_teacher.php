@@ -90,6 +90,14 @@ $string['analytics_col_evidence']    = 'Evidence';
 $string['analytics_col_risk']        = 'Risk';
 $string['analytics_ai_total_hint']   = 'Total AI sessions';
 $string['analytics_link']            = 'Full learning analytics';
+$string['analytics_col_email']        = 'Email';
+$string['analytics_col_xp_percent']   = 'XP %';
+$string['analytics_col_days_inactive'] = 'Days inactive';
+$string['analytics_col_ai_total']     = 'Total AI sessions';
+$string['analytics_col_ai_week']      = 'AI sessions this week';
+$string['analytics_col_ai_messages']  = 'AI messages';
+$string['analytics_col_risk_score']   = 'Risk (0-100)';
+$string['analytics_col_risk_level']   = 'Risk level';
 
 // AI detail modal / advisor chat / motivation generator (JS strings).
 $string['ai_detail_sessions']        = 'Sessions';

@@ -142,10 +142,19 @@ if ($format === 'csv') {
     echo "\xEF\xBB\xBF";
     $out = fopen('php://output', 'w');
     fputcsv($out, [
-        'Nombre', 'Email', 'Nivel', 'XP', 'XP%',
-        'Días sin actividad', 'Última actividad',
-        'Sesiones IA total', 'Sesiones IA semana', 'Mensajes IA',
-        'Evidencias', 'Riesgo (0-100)', 'Nivel de riesgo',
+        get_string('analytics_col_student', 'block_pharos_teacher'),
+        get_string('analytics_col_email', 'block_pharos_teacher'),
+        get_string('analytics_col_level', 'block_pharos_teacher'),
+        get_string('analytics_col_xp', 'block_pharos_teacher'),
+        get_string('analytics_col_xp_percent', 'block_pharos_teacher'),
+        get_string('analytics_col_days_inactive', 'block_pharos_teacher'),
+        get_string('analytics_col_last_seen', 'block_pharos_teacher'),
+        get_string('analytics_col_ai_total', 'block_pharos_teacher'),
+        get_string('analytics_col_ai_week', 'block_pharos_teacher'),
+        get_string('analytics_col_ai_messages', 'block_pharos_teacher'),
+        get_string('analytics_col_evidence', 'block_pharos_teacher'),
+        get_string('analytics_col_risk_score', 'block_pharos_teacher'),
+        get_string('analytics_col_risk_level', 'block_pharos_teacher'),
     ]);
     foreach ($rows as $r) {
         fputcsv($out, [

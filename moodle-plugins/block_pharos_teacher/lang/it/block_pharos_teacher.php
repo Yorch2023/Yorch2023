@@ -87,6 +87,14 @@ $string['analytics_col_evidence']    = 'Evidenze';
 $string['analytics_col_risk']        = 'Rischio';
 $string['analytics_ai_total_hint']   = 'Sessioni IA totali';
 $string['analytics_link']            = 'Analisi completa dell\'apprendimento';
+$string['analytics_col_email']        = 'Email';
+$string['analytics_col_xp_percent']   = 'XP %';
+$string['analytics_col_days_inactive'] = 'Giorni senza attività';
+$string['analytics_col_ai_total']     = 'Sessioni IA totali';
+$string['analytics_col_ai_week']      = 'Sessioni IA settimana';
+$string['analytics_col_ai_messages']  = 'Messaggi IA';
+$string['analytics_col_risk_score']   = 'Rischio (0-100)';
+$string['analytics_col_risk_level']   = 'Livello di rischio';
 
 // AI detail modal / advisor chat / motivation generator (JS strings).
 $string['ai_detail_sessions']        = 'Sessioni';

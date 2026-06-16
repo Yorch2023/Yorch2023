@@ -96,14 +96,14 @@ curl_close($ch);
 
 if ($curlError) {
     http_response_code(502);
-    echo json_encode(['error' => 'No se pudo contactar con el middleware: ' . $curlError]);
+    echo json_encode(['error' => 'Could not reach AI middleware: ' . $curlError]);
     die();
 }
 
 $decoded = json_decode($response, true);
 if (json_last_error() !== JSON_ERROR_NONE) {
     http_response_code(502);
-    echo json_encode(['error' => 'Middleware devolvió respuesta no válida (HTTP ' . $httpCode . ')']);
+    echo json_encode(['error' => 'Middleware returned an invalid response (HTTP ' . $httpCode . ')']);
     die();
 }
 
