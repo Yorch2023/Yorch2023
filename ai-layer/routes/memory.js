@@ -59,7 +59,7 @@ async function extractMemory(messages, existingProfile) {
 
     const client = getAnthropic();
     const response = await client.messages.create({
-        model:      process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5',
+        model:      process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
         max_tokens: 600,
         system:     [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
         messages:   [{ role: 'user', content: userPrompt }],

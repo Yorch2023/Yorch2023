@@ -4,6 +4,7 @@ const express = require('express');
 const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } = require('docx');
 
 const { validateMoodleToken } = require('../middleware/auth');
+const { exportLimiter } = require('../middleware/rateLimit');
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ const router = express.Router();
  *   docx → application/vnd.openxmlformats-officedocument.wordprocessingml.document
  *   html → text/html; charset=utf-8
  */
-router.post('/export', validateMoodleToken, async (req, res, next) => {
+router.post('/export', validateMoodleToken, exportLimiter, async (req, res, next) => {
     try {
         const { userId, activity, format, lang } = req.body;
 

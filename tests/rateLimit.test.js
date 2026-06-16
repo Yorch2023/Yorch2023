@@ -35,4 +35,16 @@ describe('makeLimiter (rateLimit.js)', () => {
         expect(tutorLimiter).toBeDefined();
         expect(typeof tutorLimiter).toBe('function');
     });
+
+    test('exportLimiter is exported and is Express middleware', () => {
+        const { exportLimiter } = require('../ai-layer/middleware/rateLimit');
+        expect(typeof exportLimiter).toBe('function');
+        expect(exportLimiter.length).toBe(3);
+    });
+
+    test('advisorLimiter and memoryLimiter are exported', () => {
+        const { advisorLimiter, memoryLimiter } = require('../ai-layer/middleware/rateLimit');
+        expect(typeof advisorLimiter).toBe('function');
+        expect(typeof memoryLimiter).toBe('function');
+    });
 });

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="moodle-plugins/block_pharos_onboarding/db" VERSION="20250603" COMMENT="PHAROS-AI onboarding block — no tables (profile stored in user_preferences)">
+  <TABLES>
+  </TABLES>
+</XMLDB>

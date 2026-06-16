@@ -76,7 +76,7 @@ router.post('/recommend', validateMoodleToken, tutorLimiter, async (req, res, ne
         ].filter(Boolean).join('\n');
 
         const response = await client.messages.create({
-            model: 'claude-sonnet-4-5',
+            model: process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001',
             max_tokens: 800,
             system: [
                 {
