@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coparentalidad · Jorge & Eva</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',system-ui,sans-serif;min-height:100vh;transition:background .2s,color .2s}
+
+    /* Dark theme (default) */
+    body.dark{background:#0f172a;color:#f1f5f9}
+    body.dark .card{background:#1e293b;border-color:#334155}
+    body.dark .card-dark{background:#0f172a;border-color:#1e293b}
+    body.dark .input{background:#0f172a;border-color:#334155;color:#f1f5f9}
+    body.dark .btn-ghost{background:#1e293b;border-color:#334155;color:#94a3b8}
+    body.dark .btn-sm{background:#1e293b;border-color:#334155;color:#94a3b8}
+    body.dark .header{background:#1e293b;border-color:#334155}
+    body.dark .tab-bar{background:#1e293b;border-color:#334155}
+    body.dark .today-card{background:linear-gradient(135deg,#1e3a5f,#2d1b5e)}
+    body.dark .msg-area{background:#0f172a;border-color:#1e293b}
+    body.dark .bubble-E{background:#1e293b;border-color:#334155}
+    body.dark .alert-bar{background:#422006;border-color:#7c2d12}
+
+    /* Light theme */
+    body.light{background:#f1f5f9;color:#1e293b}
+    body.light .card{background:#ffffff;border-color:#e2e8f0}
+    body.light .card-dark{background:#f8fafc;border-color:#e2e8f0}
+    body.light .input{background:#f8fafc;border-color:#e2e8f0;color:#1e293b}
+    body.light .btn-ghost{background:#f1f5f9;border-color:#e2e8f0;color:#64748b}
+    body.light .btn-sm{background:#f1f5f9;border-color:#e2e8f0;color:#1e293b}
+    body.light .header{background:#ffffff;border-color:#e2e8f0}
+    body.light .tab-bar{background:#ffffff;border-color:#e2e8f0}
+    body.light .tab-btn{color:#94a3b8}
+    body.light .tab-btn.active{color:#2563eb}
+    body.light .today-card{background:linear-gradient(135deg,#dbeafe,#ede9fe)}
+    body.light .msg-area{background:#f8fafc;border-color:#e2e8f0}
+    body.light .bubble-J{background:#2563eb}
+    body.light .bubble-E{background:#f1f5f9;border:1px solid #e2e8f0;color:#1e293b}
+    body.light .alert-bar{background:#fef3c7;border-color:#fde68a}
+    body.light .alert-pill{background:#fde68a;color:#78350f}
+    body.light .cal-day-hdr{color:#94a3b8}
+    button{cursor:pointer;font-family:inherit}
+    input,select,textarea{font-family:inherit}
+    ::-webkit-scrollbar{width:4px;height:4px}
+    ::-webkit-scrollbar-track{background:#1e293b}
+    ::-webkit-scrollbar-thumb{background:#475569;border-radius:2px}
+
+    /* Layout */
+    #app{min-height:100vh}
+    .header{background:#1e293b;border-bottom:1px solid #334155;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .tab-bar{display:flex;background:#1e293b;border-bottom:1px solid #334155;overflow-x:auto}
+    .tab-btn{padding:12px 16px;border:none;background:none;color:#64748b;font-size:12px;font-weight:500;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s;cursor:pointer}
+    .tab-btn.active{color:#60a5fa;border-bottom-color:#60a5fa;font-weight:700}
+    .content{padding:16px;max-width:720px;margin:0 auto}
+
+    /* Cards */
+    .card{background:#1e293b;border:1px solid #334155;border-radius:14px;padding:16px;margin-bottom:12px}
+    .card-dark{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:16px;margin-bottom:12px}
+
+    /* Buttons */
+    .btn-primary{background:#3b82f6;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:600;font-size:13px;transition:background .15s}
+    .btn-primary:hover{background:#2563eb}
+    .btn-ghost{background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:10px;padding:8px 14px;font-size:12px}
+    .btn-danger{background:#7f1d1d;color:#fca5a5;border:none;border-radius:8px;padding:5px 10px;font-size:11px}
+    .btn-success{background:#14532d;color:#86efac;border:none;border-radius:8px;padding:5px 10px;font-size:11px}
+    .btn-sm{background:#1e293b;border:1px solid #334155;color:#94a3b8;border-radius:8px;padding:6px 12px;font-size:14px}
+
+    /* Inputs */
+    .input{width:100%;padding:10px 12px;border-radius:9px;border:1px solid #334155;background:#0f172a;color:#f1f5f9;font-size:14px;outline:none;transition:border .15s}
+    .input:focus{border-color:#3b82f6}
+    .label{display:block;font-size:11px;font-weight:600;color:#64748b;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
+
+    /* Badges */
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600}
+    .badge-J{background:#1e3a5f;color:#60a5fa}
+    .badge-E{background:#2d1b5e;color:#a78bfa}
+    .badge-ambos{background:#064e3b;color:#6ee7b7}
+    .badge-warn{background:#422006;color:#fb923c}
+    .badge-ok{background:#14532d;color:#86efac}
+
+    /* Calendar */
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+    .cal-day-hdr{text-align:center;padding:8px 4px;font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.5px}
+    .cal-cell{min-height:40px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:default;transition:all .1s;position:relative}
+    .cal-cell.has-event{cursor:pointer}
+    .cal-cell.has-event:hover{filter:brightness(1.15)}
+    .cal-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500}
+    .cal-num.today{background:#3b82f6;color:#fff;font-weight:700}
+
+    /* Dashboard widget */
+    .today-card{background:linear-gradient(135deg,#1e3a5f,#2d1b5e);border:1px solid #3b82f6;border-radius:16px;padding:20px;margin-bottom:16px}
+
+    /* Alert banner */
+    .alert-bar{background:#422006;border-bottom:1px solid #7c2d12;padding:8px 16px;display:flex;gap:8px;align-items:center;overflow-x:auto}
+    .alert-pill{background:#7c2d12;color:#fed7aa;border-radius:20px;padding:3px 10px;font-size:11px;white-space:nowrap}
+
+    /* Toggle */
+    .toggle-row{display:flex;background:#0f172a;border:1px solid #334155;border-radius:10px;padding:3px;gap:3px;margin-bottom:14px}
+    .toggle-btn{flex:1;padding:8px;border:none;border-radius:8px;font-size:12px;font-weight:600;color:#64748b;background:none;transition:all .15s}
+    .toggle-btn.active{background:#1e293b;color:#f1f5f9}
+
+    /* Week view */
+    .week-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
+    .week-cell{border-radius:10px;padding:8px 4px;text-align:center;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+    /* Scrollable msg area */
+    .msg-area{background:#0f172a;border:1px solid #1e293b;border-radius:12px;height:320px;overflow-y:auto;padding:12px}
+    .bubble-J{background:#1e3a5f;border-radius:14px 14px 4px 14px;padding:9px 13px;max-width:75%;color:#e2e8f0}
+    .bubble-E{background:#1e293b;border-radius:14px 14px 14px 4px;padding:9px 13px;max-width:75%;color:#e2e8f0;border:1px solid #334155}
+
+    /* Animations */
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .fade-in{animation:fadeIn .2s ease}
+
+    /* Responsive */
+    @media(max-width:480px){.content{padding:10px}.card{padding:12px}}
+  </style>
+</head>
+<body>
+<div id="app"><div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#475569;font-size:14px">Cargando…</div></div>
+<script>
+// Error display for mobile debugging
+window.addEventListener('error', function(e){
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#7f1d1d;color:#fca5a5;padding:10px;font-size:11px;z-index:9999;font-family:monospace;max-height:120px;overflow:auto';
+  d.textContent='ERROR: '+(e.message||'?')+' | Línea: '+(e.lineno||'?')+' | '+(e.filename||'').split('/').pop();
+  document.body.appendChild(d);
+});
+window.addEventListener('unhandledrejection', function(e){
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#7f1d1d;color:#fca5a5;padding:10px;font-size:11px;z-index:9999;font-family:monospace;max-height:120px;overflow:auto';
+  d.textContent='PROMESA RECHAZADA: '+(e.reason&&e.reason.message?e.reason.message:JSON.stringify(e.reason)).slice(0,300);
+  document.body.appendChild(d);
+});
+</script>
+<script type="module">
+
+// ── Config ────────────────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://vghadauzsutmpwhbayxj.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_QPWLzYD62-CFJlC-0ZW8YA_W8I5rIi_';
+
+// EmailJS — se actualizará cuando Jorge proporcione las claves
+const EMAILJS_PUBLIC_KEY  = 'bKdYCToXRKW8dxVXW';
+const EMAILJS_SERVICE_ID  = 'App Coparentalidad JRM';
+const EMAILJS_TEMPLATE_ID = 'o2tlenf';
+const EMAIL_JORGE = 'jrmontoto@gmail.com';
+const EMAIL_EVA   = 'saineromartineva@gmail.com';
+
+// ⚠️ Notificaciones por email DESACTIVADAS — cambiar a true cuando Eva esté informada
+const NOTIFICACIONES_ACTIVAS = false;
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+if(EMAILJS_PUBLIC_KEY !== 'PENDIENTE') emailjs.init(EMAILJS_PUBLIC_KEY);
+
+// ── Constants ─────────────────────────────────────────────────────────────────
+const MONTHS   = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const MONTHS_L = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const EXPENSE_CATS = ['Médico','Colegio','Ropa','Actividades','Alimentación','Transporte','Ocio','Otro'];
+const CAT_COLORS = {General:'#3b82f6',Custodia:'#60a5fa',Económico:'#34d399',Salud:'#f87171',Colegio:'#a78bfa',Vacaciones:'#fb923c',Extraescolar:'#22d3ee'};
+const CUSTODY_BG   = {J:'#1e3a5f',E:'#2d1b5e',ambos:'#064e3b'};
+const CUSTODY_TEXT = {J:'#60a5fa',E:'#a78bfa',ambos:'#6ee7b7'};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const today  = () => new Date().toISOString().slice(0,10);
+const fmt    = d => d ? d.slice(0,10).split('-').reverse().join('/') : '';
+const fmtM   = n => Number(n||0).toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+const daysBetween = (a,b) => Math.max(0,Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/86400000)+1);
+const daysUntil   = d => Math.ceil((new Date(d+'T12:00:00')-new Date())/86400000);
+const addDays     = (d,n) => { const dt=new Date(d+'T12:00:00'); dt.setDate(dt.getDate()+n); return dt.toISOString().slice(0,10); };
+const nameOf      = r => r==='J'?'Jorge':r==='E'?'Eva':'Ambos';
+
+function el(tag, attrs={}, children=[]){
+  const e = document.createElement(tag);
+  Object.entries(attrs).forEach(([k,v])=>{
+    if(k==='style'&&typeof v==='object') Object.assign(e.style,v);
+    else if(k.startsWith('on')) e.addEventListener(k.slice(2).toLowerCase(),v);
+    else if(k==='className') e.className=v;
+    else e.setAttribute(k,v);
+  });
+  (Array.isArray(children)?children:[children]).forEach(c=>{
+    if(c==null) return;
+    e.appendChild(typeof c==='string'?document.createTextNode(c):c);
+  });
+  return e;
+}
+function inp(type, val, cb, placeholder='', cls='input'){
+  const i = el('input',{type,placeholder,className:cls});
+  i.value=val||'';
+  i.addEventListener(type==='date'?'change':'input',e=>cb(e.target.value));
+  return i;
+}
+function sel(options, val, cb){
+  const s=el('select',{className:'input'});
+  options.forEach(([v,l])=>{ const o=el('option',{value:v},l); if(v===val)o.selected=true; s.appendChild(o); });
+  s.addEventListener('change',e=>cb(e.target.value));
+  return s;
+}
+function row(...items){ const d=el('div',{style:{display:'flex',gap:10,marginBottom:10}}); items.forEach(i=>d.appendChild(i)); return d; }
+function col(children,flex=1){ const d=el('div',{style:{flex}}); (Array.isArray(children)?children:[children]).forEach(c=>d.appendChild(c)); return d; }
+function lbl(text){ return el('label',{className:'label'},text); }
+function badge(text,cls){ return el('span',{className:'badge '+cls},text); }
+
+// ── Weekly schedule generator ─────────────────────────────────────────────────
+// Pattern: week A = Jorge (L-D), week B = Eva (L-D), wednesday optional
+function generateWeeklySchedule(startDate, weeksAhead=26, wednesdayMode='optional'){
+  // startDate must be a Monday; startWith = 'J' or 'E'
+  const events=[];
+  let cur = new Date(startDate+'T12:00:00');
+  let whoWeek = 'J'; // Jorge starts
+  for(let w=0;w<weeksAhead;w++){
+    const mon  = new Date(cur);
+    const sun  = new Date(cur); sun.setDate(sun.getDate()+6);
+    const wed  = new Date(cur); wed.setDate(wed.getDate()+2);
+    const thu  = new Date(cur); thu.setDate(thu.getDate()+3);
+    const monStr = mon.toISOString().slice(0,10);
+    const sunStr = sun.toISOString().slice(0,10);
+    const wedStr = wed.toISOString().slice(0,10);
+    const thuStr = thu.toISOString().slice(0,10);
+    const other  = whoWeek==='J'?'E':'J';
+
+    if(wednesdayMode==='fixed_other'){
+      // L-M con whoWeek, X con other, J-D con whoWeek
+      events.push({from:monStr, to:addDays(monStr,1), who:whoWeek, note:'Turno semanal (L-M)', auto:true});
+      events.push({from:wedStr, to:wedStr, who:other, note:'Miércoles fijo', auto:true});
+      events.push({from:thuStr, to:sunStr, who:whoWeek, note:'Turno semanal (J-D)', auto:true});
+    } else {
+      // Semana completa
+      events.push({from:monStr, to:sunStr, who:whoWeek, note:'Turno semanal', auto:true});
+    }
+    // Advance week
+    cur.setDate(cur.getDate()+7);
+    whoWeek = other;
+  }
+  return events;
+}
+
+// ── Email notifications ───────────────────────────────────────────────────────
+async function sendCustodyNotification(action, event, fromUser){
+  if(!NOTIFICACIONES_ACTIVAS) return; // desactivadas hasta avisar a Eva
+  const toEmail = fromUser==='J' ? EMAIL_EVA : EMAIL_JORGE;
+  if(!toEmail) return;
+  const actionText = action==='add'?'añadido':action==='update'?'modificado':'cancelado';
+  const params = {
+    to_email: toEmail,
+    from_name: nameOf(fromUser),
+    action: actionText,
+    who: nameOf(event.who),
+    from_date: fmt(event.from),
+    to_date: fmt(event.to),
+    note: event.note||'Sin nota',
+    days: daysBetween(event.from, event.to),
+    app_url: window.location.href,
+  };
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+    console.log('Email enviado a', toEmail);
+  } catch(e) {
+    console.warn('Error enviando email:', e);
+  }
+}
+
+// ── Agreement templates ───────────────────────────────────────────────────────
+const AG_TEMPLATES = [
+  {category:'Vacaciones', title:'Vacaciones de verano', detail:'Martina pasa la primera quincena de agosto con Jorge y la segunda con Eva. Los viajes al extranjero requieren consentimiento previo de ambos.'},
+  {category:'Vacaciones', title:'Navidad', detail:'Años pares: del 24 al 31 de diciembre con Jorge, del 1 al 6 de enero con Eva. Años impares: al revés.'},
+  {category:'Vacaciones', title:'Semana Santa', detail:'Años pares con Jorge, años impares con Eva. Incluye el fin de semana anterior y posterior.'},
+  {category:'Salud', title:'Decisiones médicas', detail:'Las decisiones médicas no urgentes requieren acuerdo previo de ambos. Las urgencias las gestiona el progenitor que esté con Martina e informa al otro en menos de 2 horas.'},
+  {category:'Salud', title:'Medicación habitual', detail:'Cada progenitor mantiene stock de medicación habitual. Se informa de cualquier cambio de pauta.'},
+  {category:'Colegio', title:'Reuniones escolares', detail:'Ambos progenitores asisten a las reuniones del colegio. Si no es posible, el que asista informa al otro en 24h.'},
+  {category:'Colegio', title:'Actividades extraescolares', detail:'Las actividades extraescolares las lleva el progenitor que tiene custodia ese día.'},
+  {category:'Económico', title:'Gastos extraordinarios', detail:'Los gastos superiores a 100€ requieren acuerdo previo. Se dividen al 50%.'},
+  {category:'Económico', title:'Gastos corrientes', detail:'Cada progenitor cubre los gastos corrientes durante su semana. Los gastos médicos y escolares al 50%.'},
+  {category:'General', title:'Comunicación con Martina', detail:'Martina puede llamar al otro progenitor en cualquier momento. Se facilita la comunicación diaria si ella lo desea.'},
+];
+
+// ── Checklist defaults ────────────────────────────────────────────────────────
+const CHECKLIST_DEFAULT = [
+  {id:1, text:'Mochila del colegio con todo el material', done:false},
+  {id:2, text:'Ropa suficiente para la semana', done:false},
+  {id:3, text:'Medicación habitual', done:false},
+  {id:4, text:'Cargador del móvil/tablet', done:false},
+  {id:5, text:'Objeto de apego (peluche/manta)', done:false},
+  {id:6, text:'Zapatillas de deporte', done:false},
+  {id:7, text:'Documentación médica si hay cita', done:false},
+  {id:8, text:'Ropa de abrigo según tiempo', done:false},
+];
+
+function loadChecklist(){
+  try { return JSON.parse(localStorage.getItem('cp:checklist')) || JSON.parse(JSON.stringify(CHECKLIST_DEFAULT)); }
+  catch { return JSON.parse(JSON.stringify(CHECKLIST_DEFAULT)); }
+}
+function saveChecklist(list){ try { localStorage.setItem('cp:checklist', JSON.stringify(list)); } catch{} }
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+async function requestNotifPermission(){
+  if(!('Notification' in window)) return false;
+  if(Notification.permission==='granted') return true;
+  const p = await Notification.requestPermission();
+  return p==='granted';
+}
+function fireNotif(title, body){
+  if(Notification.permission==='granted') new Notification(title,{body,icon:'https://yorch2023.github.io/coparentalidad/favicon.png'});
+}
+function scheduleUpcomingNotifications(){
+  if(Notification.permission!=='granted') return;
+  const todayStr=today();
+  S.events.filter(ev=>ev.from>=todayStr&&ev.changeStatus!=='rechazado').slice(0,10).forEach(ev=>{
+    const msDay = new Date(ev.from+'T08:00:00').getTime()-Date.now();
+    const msDayBefore = new Date(addDays(ev.from,-1)+'T20:00:00').getTime()-Date.now();
+    if(msDayBefore>0) setTimeout(()=>fireNotif('🔔 Cambio de custodia mañana', S.child.name||'Martina'+' pasa con '+(nameOf(ev.who))+' mañana'), msDayBefore);
+    if(msDay>0) setTimeout(()=>fireNotif('📅 Cambio de custodia hoy', S.child.name||'Martina'+' pasa con '+(nameOf(ev.who))+' hoy'), msDay);
+  });
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let S = {
+  user: null,
+  tab: 0,
+  expenses:[], events:[], agreements:[], messages:[], wishlist:[], notes:[],
+  child:{name:'Martina',dob:'',school:'',doctor:'',ss:'',allergies:'',size_clothes:'',size_shoes:'',tutor1:'',tutor2:'',notes:''},
+};
+
+let UI = {
+  calYear: new Date().getFullYear(), calMonth: new Date().getMonth(),
+  calView: 'month', // 'month' | 'week'
+  calSelected: null,
+  showEventForm: false,
+  eventForm: {from:today(),to:today(),who:'J',note:'',changeRequest:false},
+  // Weekly schedule generator
+  showWeekGen: false,
+  weekGen: {startDate:today(), startWith:'J', wednesdayMode:'none', weeks:12},
+  // Expenses
+  expFilter:'todos', expCatFilter:'todas',
+  showExpForm:false,
+  expForm:{date:today(),desc:'',amount:'',cat:'Médico',paidBy:'J',split:'50-50',status:'pendiente',note:'',receipt:null},
+  // Agreements
+  showAgForm:false, agSubTab:0,
+  agForm:{date:today(),title:'',detail:'',category:'General'},
+  // Messages
+  msgText:'',
+  // Ficha
+  childEditing:false, childDraft:{},
+  // Wishlist
+  showWishForm:false,
+  wishForm:{item:'',priority:'normal',requestedBy:'J'},
+  // Checklist
+  checklistItem:'',
+  // AI parser
+  showAiParser:false, aiParserText:'', aiParserLoading:false, aiParserResult:null,
+  // Agreements
+  agTemplateOpen:false,
+  // Notes
+  noteText:'', noteColor:'yellow',
+  // Notif
+  notifRequested:false,
+  // Search
+  searchOpen:false, searchQuery:'',
+  // Weekly summary
+  summaryDismissed: localStorage.getItem('cp:summaryDismissed')||'',
+  // Theme
+  theme: localStorage.getItem('cp:theme')||'dark',
+  // Alert config
+  showAlertConfig:false,
+  alertDaysBefore: parseInt(localStorage.getItem('cp:alertDays')||'1'),
+};
+
+let rtSubs = [];
+
+// ── Data layer ────────────────────────────────────────────────────────────────
+async function loadAll(){
+  try {
+    const [ev,ex,ag,ms,wl,ch] = await Promise.all([
+      sb.from('events').select('*').order('from_date'),
+      sb.from('expenses').select('*').order('date',{ascending:false}),
+      sb.from('agreements').select('*').order('date',{ascending:false}),
+      sb.from('messages').select('*').order('ts'),
+      sb.from('wishlist').select('*').order('created_at'),
+      sb.from('child_profile').select('*').limit(1).single(),
+    ]);
+    S.events    = (ev.data||[]).map(r=>({...r,from:r.from_date,to:r.to_date,changeRequest:r.change_request,changeStatus:r.change_status}));
+    S.expenses  = (ex.data||[]).map(r=>({...r,desc:r.description,paidBy:r.paid_by,liquidatedAt:r.liquidated_at,receipt:r.receipt}));
+    S.agreements= ag.data||[];
+    S.messages  = (ms.data||[]).map(r=>({...r,from:r.from_user}));
+    S.wishlist  = (wl.data||[]).map(r=>({...r,requestedBy:r.requested_by,addedAt:r.added_at}));
+    if(ch.data) S.child = ch.data;
+  } catch(e){ console.error('loadAll core error:', e); }
+  // Notes — optional, don't crash if table missing
+  try {
+    const nt = await sb.from('notes').select('*').order('created_at',{ascending:false});
+    S.notes = nt.data||[];
+  } catch(e){ S.notes=[]; console.warn('notes table not available'); }
+}
+
+function subscribeRT(){
+  rtSubs.forEach(s=>sb.removeChannel(s));
+  rtSubs=[];
+  ['events','expenses','agreements','messages','wishlist','child_profile','notes'].forEach(t=>{
+    const c=sb.channel('rt-'+t).on('postgres_changes',{event:'*',schema:'public',table:t},()=>loadAll().then(render)).subscribe();
+    rtSubs.push(c);
+  });
+}
+
+// DB ops
+async function dbAddEvent(f){
+  const {data}=await sb.from('events').insert({from_date:f.from,to_date:f.to,who:f.who,note:f.note,change_request:!!f.changeRequest,change_status:f.changeRequest?'pendiente':'confirmado',created_by:S.user?.role}).select().single();
+  logActivity('añadió','custodia',nameOf(f.who)+' '+fmt(f.from)+'→'+fmt(f.to));
+  await sendCustodyNotification('add',f,S.user?.role);
+  await loadAll(); render();
+}
+async function dbAddEventsBulk(arr){
+  const rows=arr.map(f=>({from_date:f.from,to_date:f.to,who:f.who,note:f.note,change_request:false,change_status:'confirmado',created_by:S.user?.role}));
+  await sb.from('events').insert(rows);
+  await loadAll(); render();
+}
+async function dbDelEvent(id){
+  const ev=S.events.find(e=>e.id===id);
+  await sb.from('events').delete().eq('id',id);
+  if(ev){ logActivity('borró','custodia',nameOf(ev.who)+' '+fmt(ev.from)+'→'+fmt(ev.to)); await sendCustodyNotification('delete',ev,S.user?.role); }
+  await loadAll(); render();
+}
+async function dbUpdEvent(id,data){
+  const ev=S.events.find(e=>e.id===id);
+  await sb.from('events').update(data).eq('id',id);
+  if(ev) await sendCustodyNotification('update',{...ev,...data},S.user?.role);
+  await loadAll(); render();
+}
+async function dbToggleExpense(id){
+  const e=S.expenses.find(x=>x.id===id);
+  const ns=e.status==='pendiente'?'liquidado':'pendiente';
+  await sb.from('expenses').update({status:ns,liquidated_at:ns==='liquidado'?new Date().toISOString():null}).eq('id',id);
+  await loadAll(); render();
+}
+async function dbAddExpense(f){
+  await sb.from('expenses').insert({date:f.date,description:f.desc,amount:parseFloat(f.amount),cat:f.cat,paid_by:f.paidBy,split:f.split,status:f.status,note:f.note,receipt:f.receipt||null,created_by:S.user?.role});
+  logActivity('añadió','gasto',f.desc+' '+(fmtM(f.amount))+'');
+  await loadAll(); render();
+}
+async function dbDelExpense(id){ await sb.from('expenses').delete().eq('id',id); await loadAll(); render(); }
+async function dbAddAgreement(f){ logActivity('añadió','acuerdo',f.title); await sb.from('agreements').insert({date:f.date,title:f.title,detail:f.detail,category:f.category,status:'activo',created_by:S.user?.role}); await loadAll(); render(); }
+async function dbDelAgreement(id){ await sb.from('agreements').delete().eq('id',id); await loadAll(); render(); }
+async function dbToggleAgreement(id){ const a=S.agreements.find(x=>x.id===id); await sb.from('agreements').update({status:a.status==='activo'?'archivado':'activo'}).eq('id',id); await loadAll(); render(); }
+async function dbSendMsg(text){ await sb.from('messages').insert({from_user:S.user.role,text}); await loadAll(); render(); }
+async function dbAddWish(f){ await sb.from('wishlist').insert({item:f.item,priority:f.priority,requested_by:f.requestedBy,done:false}); await loadAll(); render(); }
+async function dbDelWish(id){ await sb.from('wishlist').delete().eq('id',id); await loadAll(); render(); }
+async function dbToggleWish(id){ const w=S.wishlist.find(x=>x.id===id); await sb.from('wishlist').update({done:!w.done}).eq('id',id); await loadAll(); render(); }
+async function dbAddNote(text,color){
+  await sb.from('notes').insert({text,color:color||'yellow',from_user:S.user.role,created_at:new Date().toISOString()});
+  await loadAll(); render();
+}
+async function dbDelNote(id){ await sb.from('notes').delete().eq('id',id); await loadAll(); render(); }
+
+async function dbSaveChild(data){ await sb.from('child_profile').update({...data,updated_at:new Date().toISOString()}).eq('id',S.child.id); await loadAll(); render(); }
+
+// ── PDF export ────────────────────────────────────────────────────────────────
+function exportPDF(){
+  const {expenses,events,agreements,child}=S;
+  const pend=expenses.filter(e=>e.status==='pendiente');
+  const total=expenses.reduce((s,e)=>s+parseFloat(e.amount||0),0);
+  const pendTotal=pend.reduce((s,e)=>s+parseFloat(e.amount||0),0);
+  const cd={J:0,E:0,ambos:0};
+  events.forEach(ev=>{let d=new Date(ev.from+'T12:00:00'),end=new Date(ev.to+'T12:00:00');while(d<=end){cd[ev.who]=(cd[ev.who]||0)+1;d.setDate(d.getDate()+1);}});
+  const td=cd.J+cd.E+cd.ambos;
+  const now=new Date().toLocaleDateString('es-ES');
+  const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Informe Coparentalidad ${now}</title>
+<style>body{font-family:Arial,sans-serif;font-size:12px;color:#1e293b;margin:30px;line-height:1.6}
+h1{font-size:22px;margin-bottom:4px}h2{font-size:14px;margin:22px 0 8px;border-bottom:2px solid #3b82f6;padding-bottom:4px;color:#2563eb}
+table{width:100%;border-collapse:collapse;margin-bottom:14px}th{background:#f8fafc;text-align:left;padding:7px 9px;font-size:11px;border:1px solid #e2e8f0;color:#64748b}
+td{padding:7px 9px;border:1px solid #e2e8f0;font-size:11px}.meta{color:#64748b;font-size:11px;margin-bottom:24px}
+.stat{display:inline-block;margin-right:28px}.stat-n{font-size:20px;font-weight:700}.stat-l{font-size:10px;color:#64748b}
+.footer{margin-top:32px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8}</style></head>
+<body><h1>🤝 Informe de Coparentalidad</h1><div class="meta">Generado el ${now} · Jorge · Eva · ${child.name||'Menor'}</div>
+<h2>Resumen</h2><div style="margin-bottom:18px">
+<div class="stat"><div class="stat-n">${expenses.length}</div><div class="stat-l">Gastos</div></div>
+<div class="stat"><div class="stat-n">${fmtM(total)}</div><div class="stat-l">Total</div></div>
+<div class="stat"><div class="stat-n">${fmtM(pendTotal)}</div><div class="stat-l">Pendiente</div></div>
+<div class="stat"><div class="stat-n">${td}</div><div class="stat-l">Días custodia</div></div></div>
+${td>0?`<h2>Custodia</h2><table><tr><th>Jorge</th><th>Eva</th><th>Ambos</th><th>Total</th></tr><tr><td>${cd.J}d (${Math.round(cd.J/td*100)}%)</td><td>${cd.E}d (${Math.round(cd.E/td*100)}%)</td><td>${cd.ambos}d</td><td>${td}d</td></tr></table>`:''}
+${pend.length>0?`<h2>Gastos pendientes</h2><table><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Importe</th><th>Paga</th><th>Reparto</th></tr>${pend.map(e=>`<tr><td>${fmt(e.date)}</td><td>${e.desc}</td><td>${e.cat}</td><td>${fmtM(e.amount)}</td><td>${e.paidBy==='J'?'Jorge':'Eva'}</td><td>${e.split}</td></tr>`).join('')}</table>`:''}
+${agreements.filter(a=>a.status==='activo').length>0?`<h2>Acuerdos activos</h2><table><tr><th>Fecha</th><th>Categoría</th><th>Acuerdo</th><th>Detalle</th></tr>${agreements.filter(a=>a.status==='activo').map(a=>`<tr><td>${fmt(a.date)}</td><td>${a.category}</td><td>${a.title}</td><td>${a.detail||'-'}</td></tr>`).join('')}</table>`:''}
+<div class="footer">Documento de registro privado. Para uso con validez legal contactar con mediador o abogado de familia.</div></body></html>`;
+  const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
+}
+
+// ── RENDER ROOT ───────────────────────────────────────────────────────────────
+function render(){
+  const app=document.getElementById('app');
+  app.innerHTML='';
+  document.body.className=UI.theme;
+  if(!S.user){ app.appendChild(renderLogin()); return; }
+  app.appendChild(renderShell());
+}
+function toggleTheme(){
+  UI.theme=UI.theme==='dark'?'light':'dark';
+  localStorage.setItem('cp:theme',UI.theme);
+  render();
+}
+
+// ── LOGIN ─────────────────────────────────────────────────────────────────────
+function renderLogin(){
+  const wrap=el('div',{style:{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100vh',background:'#0f172a'}});
+  const box=el('div',{className:'card fade-in',style:{width:320,textAlign:'center',padding:32,margin:16}});
+  box.append(
+    el('div',{style:{fontSize:36,marginBottom:16}},'🤝'),
+    el('div',{style:{fontWeight:800,fontSize:22,marginBottom:4,letterSpacing:-0.5}},'Coparentalidad'),
+    el('div',{style:{color:'#64748b',fontSize:13,marginBottom:28}},'Jorge · Eva · Martina'),
+    el('div',{className:'label',style:{marginBottom:12}},'¿Quién eres?'),
+  );
+  const btns=el('div',{style:{display:'flex',gap:10,marginBottom:24}});
+  ['J','E'].forEach(r=>{
+    const active=UI.loginRole===r;
+    const b=el('button',{
+      style:{flex:1,padding:14,borderRadius:12,border:'2px solid',borderColor:active?CUSTODY_TEXT[r]:'#334155',background:active?CUSTODY_BG[r]:'transparent',color:active?CUSTODY_TEXT[r]:'#64748b',fontWeight:700,fontSize:15,transition:'all .15s'},
+      onClick:()=>{UI.loginRole=r;render();}
+    },r==='J'?'👨 Jorge':'👩 Eva');
+    btns.appendChild(b);
+  });
+  box.appendChild(btns);
+  box.appendChild(el('button',{
+    className:'btn-primary',style:{width:'100%',padding:13,fontSize:14},
+    onClick:()=>{ S.user={role:UI.loginRole,name:nameOf(UI.loginRole)}; render(); subscribeRT(); }
+  },'Entrar'));
+  wrap.appendChild(box);
+  return wrap;
+}
+
+// ── SHELL ─────────────────────────────────────────────────────────────────────
+function renderShell(){
+  const wrap=el('div',{});
+
+  // Balance
+  const pend=S.expenses.filter(e=>e.status==='pendiente');
+  const bal={J:0,E:0};
+  pend.forEach(e=>{const a=parseFloat(e.amount||0);if(e.split==='50-50'){const h=a/2;if(e.paidBy==='J')bal.E+=h;else bal.J+=h;}else if(e.split==='100% Jorge'){if(e.paidBy==='E')bal.J+=a;}else if(e.split==='100% Eva'){if(e.paidBy==='J')bal.E+=a;}});
+  const diff=bal.E-bal.J;
+
+  // Alerts
+  const alerts=[];
+  S.expenses.filter(e=>e.status==='pendiente').forEach(e=>{const age=Math.round((Date.now()-new Date(e.date+'T12:00:00'))/86400000);if(age>=14)alerts.push(`"${e.desc}" — ${age}d pendiente`);});
+  S.events.forEach(ev=>{const d=daysUntil(ev.from);if(d>=0&&d<=2)alerts.push(`Cambio de custodia ${d===0?'HOY':`en ${d}d`} → ${nameOf(ev.who)}`);});
+  S.events.filter(ev=>ev.changeStatus==='pendiente').forEach(()=>alerts.push('Solicitud de cambio pendiente de confirmar'));
+
+  // Header
+  const hdr=el('div',{className:'header'});
+  const hL=el('div',{style:{display:'flex',alignItems:'center',gap:12}});
+  hL.append(el('span',{style:{fontSize:22}},'🤝'),el('div',{}));
+  hL.children[1].append(
+    el('div',{style:{fontWeight:800,fontSize:15,letterSpacing:-0.3}},'Coparentalidad'),
+    el('div',{style:{color:'#64748b',fontSize:11}},`${S.user.name} · ${S.child.name||'Martina'}`)
+  );
+  const hR=el('div',{style:{display:'flex',gap:8,alignItems:'center'}});
+  if(Math.abs(diff)>0.01) hR.appendChild(badge(diff>0?`Eva debe ${fmtM(diff)}`:`Jorge debe ${fmtM(Math.abs(diff))}`,'badge-warn'));
+  hR.append(
+    el('button',{className:'btn-ghost',style:{fontSize:11},onClick:exportPDF},'📄 PDF'),
+    el('button',{className:'btn-ghost',style:{fontSize:11,padding:'6px 10px'},onClick:()=>{S.user=null;rtSubs.forEach(s=>sb.removeChannel(s));render();}},'Salir')
+  );
+  hdr.append(hL,hR);
+
+  // Alert bar
+  let alertEl=null;
+  if(alerts.length){
+    alertEl=el('div',{className:'alert-bar'});
+    alertEl.appendChild(el('span',{style:{fontSize:14,flexShrink:0}},'⚠️'));
+    const aw=el('div',{style:{display:'flex',gap:8,overflowX:'auto'}});
+    alerts.forEach(a=>aw.appendChild(el('span',{className:'alert-pill'},a)));
+    alertEl.appendChild(aw);
+  }
+
+  // Tabs
+  const TABS=['🏠 Inicio','📅 Custodia','💶 Gastos','👤 Ficha','📝 Acuerdos','✅ Intercambio','📊 Stats'];
+  const tabBar=el('div',{className:'tab-bar'});
+  TABS.forEach((t,i)=>tabBar.appendChild(el('button',{className:'tab-btn'+(S.tab===i?' active':''),onClick:()=>{S.tab=i;render();}},t)));
+
+  // Search overlay
+  let searchEl=null;
+  if(UI.searchOpen){
+    searchEl=el('div',{style:{background:'var(--bg,#0f172a)',borderBottom:'1px solid #334155',padding:'12px 16px'}});
+    const si=el('input',{className:'input',placeholder:'Buscar en gastos, acuerdos, mensajes…',style:{marginBottom:UI.searchQuery?12:0}});
+    si.value=UI.searchQuery;
+    si.addEventListener('input',e=>{UI.searchQuery=e.target.value;render();});
+    setTimeout(()=>si.focus(),50);
+    searchEl.appendChild(si);
+    if(UI.searchQuery.trim().length>1){
+      const q=UI.searchQuery.toLowerCase();
+      const results=[];
+      S.expenses.filter(e=>e.desc?.toLowerCase().includes(q)||e.cat?.toLowerCase().includes(q)||e.note?.toLowerCase().includes(q)).forEach(e=>results.push({type:'💶 Gasto',title:e.desc,sub:`${fmtM(e.amount)} · ${fmt(e.date)}`,onClick:()=>{S.tab=2;UI.searchOpen=false;render();}}));
+      S.agreements.filter(a=>a.title?.toLowerCase().includes(q)||a.detail?.toLowerCase().includes(q)||a.category?.toLowerCase().includes(q)).forEach(a=>results.push({type:'📝 Acuerdo',title:a.title,sub:`${a.category} · ${fmt(a.date)}`,onClick:()=>{S.tab=4;UI.searchOpen=false;render();}}));
+      S.messages.filter(m=>m.text?.toLowerCase().includes(q)).forEach(m=>results.push({type:'💬 Mensaje',title:m.text.slice(0,60)+(m.text.length>60?'…':''),sub:`${nameOf(m.from)} · ${new Date(m.ts).toLocaleDateString('es-ES')}`,onClick:()=>{S.tab=4;UI.agSubTab=1;UI.searchOpen=false;render();}}));
+      S.events.filter(ev=>ev.note?.toLowerCase().includes(q)).forEach(ev=>results.push({type:'📅 Custodia',title:ev.note,sub:`${nameOf(ev.who)} · ${fmt(ev.from)}→${fmt(ev.to)}`,onClick:()=>{S.tab=1;UI.searchOpen=false;render();}}));
+      if(!results.length){
+        searchEl.appendChild(el('div',{style:{color:'#475569',fontSize:13,padding:'8px 0'}},'Sin resultados'));
+      } else {
+        const rl=el('div',{style:{maxHeight:260,overflowY:'auto'}});
+        results.slice(0,12).forEach(r=>{
+          const row=el('div',{style:{display:'flex',gap:10,padding:'9px 0',borderBottom:'1px solid #1e293b',cursor:'pointer',alignItems:'start'},onClick:r.onClick});
+          row.append(
+            el('span',{style:{fontSize:10,background:'#1e293b',borderRadius:6,padding:'3px 7px',flexShrink:0,color:'#94a3b8',whiteSpace:'nowrap'}},r.type),
+            el('div',{},[el('div',{style:{fontSize:13,fontWeight:600,marginBottom:2}},r.title),el('div',{style:{fontSize:11,color:'#475569'}},r.sub)])
+          );
+          rl.appendChild(row);
+        });
+        if(results.length>12) rl.appendChild(el('div',{style:{fontSize:11,color:'#475569',padding:'6px 0'}},`+${results.length-12} más`));
+        searchEl.appendChild(rl);
+      }
+    }
+  }
+
+  // Weekly summary banner
+  const mon=new Date(); mon.setHours(12,0,0,0);
+  const dow=mon.getDay(); const diff2=dow===0?-6:1-dow;
+  mon.setDate(mon.getDate()+diff2);
+  const monStr=mon.toISOString().slice(0,10);
+  let summaryEl=null;
+  if(dow>=1 && UI.summaryDismissed!==monStr){
+    const prevMon=addDays(monStr,-7);
+    const prevSun=addDays(monStr,-1);
+    const weekExp=S.expenses.filter(e=>e.date>=prevMon&&e.date<=prevSun);
+    const weekEvs=S.events.filter(ev=>ev.from<=prevSun&&ev.to>=prevMon&&ev.changeStatus!=='rechazado');
+    const weekTotal=weekExp.reduce((s,e)=>s+parseFloat(e.amount||0),0);
+    const weekPend=weekExp.filter(e=>e.status==='pendiente').reduce((s,e)=>s+parseFloat(e.amount||0),0);
+    if(weekExp.length>0||weekEvs.length>0){
+      summaryEl=el('div',{style:{background:'#1e3a5f',borderBottom:'1px solid #2563eb',padding:'10px 16px',display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}});
+      const txt=el('div',{});
+      txt.appendChild(el('div',{style:{fontSize:12,fontWeight:700,color:'#60a5fa',marginBottom:3}},'📋 Resumen semana anterior'));
+      const parts=[];
+      if(weekExp.length) parts.push(`${weekExp.length} gastos (${fmtM(weekTotal)}${weekPend>0?' · '+fmtM(weekPend)+' pendiente':''})`);
+      if(weekEvs.length) parts.push(weekEvs.length+' periodos de custodia');
+      txt.appendChild(el('div',{style:{fontSize:11,color:'#93c5fd'}},parts.join(' · ')));
+      const closeBtn=el('button',{style:{background:'none',border:'none',color:'#475569',fontSize:16,cursor:'pointer',flexShrink:0},onClick:()=>{UI.summaryDismissed=monStr;localStorage.setItem('cp:summaryDismissed',monStr);render();}},'✕');
+      summaryEl.append(txt,closeBtn);
+    }
+  }
+
+  const content=el('div',{className:'content fade-in'});
+  if(S.tab===0) content.appendChild(renderDashboard(diff));
+  if(S.tab===1) content.appendChild(renderCustodia());
+  if(S.tab===2) content.appendChild(renderGastos(diff));
+  if(S.tab===3) content.appendChild(renderFicha());
+  if(S.tab===4) content.appendChild(renderAcuerdos());
+  if(S.tab===5) content.appendChild(renderIntercambio());
+  if(S.tab===6) content.appendChild(renderStats());
+
+  wrap.append(hdr);
+  if(alertEl) wrap.append(alertEl);
+  if(summaryEl) wrap.append(summaryEl);
+  if(searchEl) wrap.append(searchEl);
+  wrap.append(tabBar,content);
+  return wrap;
+}
+
+
+// ── Festivos Santa Cruz de Tenerife 2025-2027 ─────────────────────────────────
+const FESTIVOS = {
+  // Nacionales
+  '2025-01-01':'Año Nuevo','2025-01-06':'Reyes Magos','2025-04-18':'Viernes Santo',
+  '2025-05-01':'Día del Trabajo','2025-08-15':'Asunción de la Virgen',
+  '2025-10-12':'Fiesta Nacional','2025-11-01':'Todos los Santos',
+  '2025-12-06':'Día de la Constitución','2025-12-08':'Inmaculada Concepción','2025-12-25':'Navidad',
+  // Canarias / Santa Cruz
+  '2025-02-03':'San Blas (local)','2025-02-28':'Carnaval (festivo local)',
+  '2025-03-04':'Martes de Carnaval (local)','2025-05-30':'Día de Canarias',
+  '2026-01-01':'Año Nuevo','2026-01-06':'Reyes Magos','2026-04-03':'Viernes Santo',
+  '2026-05-01':'Día del Trabajo','2026-08-15':'Asunción de la Virgen',
+  '2026-10-12':'Fiesta Nacional','2026-11-01':'Todos los Santos',
+  '2026-12-06':'Día de la Constitución','2026-12-08':'Inmaculada Concepción','2026-12-25':'Navidad',
+  '2026-02-03':'San Blas (local)','2026-02-16':'Carnaval (festivo local)',
+  '2026-02-17':'Martes de Carnaval (local)','2026-05-29':'Día de Canarias',
+  '2027-01-01':'Año Nuevo','2027-01-06':'Reyes Magos','2027-03-26':'Viernes Santo',
+  '2027-05-01':'Día del Trabajo','2027-08-15':'Asunción de la Virgen',
+  '2027-10-12':'Fiesta Nacional','2027-11-01':'Todos los Santos',
+  '2027-12-06':'Día de la Constitución','2027-12-08':'Inmaculada Concepción','2027-12-25':'Navidad',
+  '2027-02-03':'San Blas (local)','2027-02-08':'Carnaval (festivo local)',
+  '2027-02-09':'Martes de Carnaval (local)','2027-05-28':'Día de Canarias',
+};
+function isFestivo(dateStr){ return !!FESTIVOS[dateStr]; }
+function festivoName(dateStr){ return FESTIVOS[dateStr]||''; }
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+function renderDashboard(diff){
+  const wrap=el('div',{});
+  const todayStr=today();
+
+  // Who has Martina today
+  const todayEv=S.events.find(ev=>ev.from<=todayStr&&ev.to>=todayStr&&ev.changeStatus!=='rechazado');
+  const nextEv=[...S.events].filter(ev=>ev.from>todayStr&&ev.changeStatus!=='rechazado').sort((a,b)=>a.from.localeCompare(b.from))[0];
+
+  // Today card
+  const tc=el('div',{className:'today-card'});
+  tc.append(el('div',{style:{fontSize:11,color:'#94a3b8',marginBottom:8,textTransform:'uppercase',letterSpacing:0.5}},'📅 Hoy · '+new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'})));
+  if(todayEv){
+    tc.append(
+      el('div',{style:{fontWeight:800,fontSize:22,marginBottom:4,color:CUSTODY_TEXT[todayEv.who]}}, S.child.name||'Martina'+' está con '+(nameOf(todayEv.who))+''),
+      el('div',{style:{fontSize:13,color:'#94a3b8'}},'hasta el '+(fmt(todayEv.to))+(todayEv.note?' · '+todayEv.note:'')+'')
+    );
+  } else {
+    tc.appendChild(el('div',{style:{fontWeight:700,fontSize:18,color:'#94a3b8'}},'Sin custodia registrada hoy'));
+  }
+  if(nextEv){
+    tc.append(el('div',{style:{marginTop:12,paddingTop:12,borderTop:'1px solid rgba(255,255,255,.1)',fontSize:12,color:'#64748b'}},[
+      el('span',{},'Próximo cambio: '),
+      el('span',{style:{color:CUSTODY_TEXT[nextEv.who],fontWeight:600}},nameOf(nextEv.who)),
+      el('span',{},' el '+(fmt(nextEv.from))+' ('+(daysUntil(nextEv.from)===0?'hoy':daysUntil(nextEv.from)===1?'mañana':'en '+daysUntil(nextEv.from)+'d')+')')
+    ]));
+  }
+  wrap.appendChild(tc);
+
+  // Stats row
+  const pend=S.expenses.filter(e=>e.status==='pendiente');
+  const stats=el('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,marginBottom:16}});
+  [
+    [S.events.filter(e=>e.from>=todayStr).length,'Periodos futuros','📅'],
+    [pend.length,'Gastos pendientes','💶'],
+    [S.agreements.filter(a=>a.status==='activo').length,'Acuerdos','📝'],
+  ].forEach(([v,l,icon])=>{
+    const s=el('div',{className:'card',style:{textAlign:'center',padding:'14px 10px'}});
+    s.append(el('div',{style:{fontSize:20,marginBottom:4}},icon),el('div',{style:{fontWeight:800,fontSize:20,marginBottom:2}},String(v)),el('div',{style:{fontSize:11,color:'#64748b'}},l));
+    stats.appendChild(s);
+  });
+  wrap.appendChild(stats);
+
+  // Balance card
+  if(Math.abs(diff)>0.01){
+    const bc=el('div',{className:'card',style:{borderColor:'#422006',background:'#1c0a00',marginBottom:12}});
+    bc.append(
+      el('div',{style:{fontSize:11,color:'#fb923c',marginBottom:6,textTransform:'uppercase',letterSpacing:.5}},'💶 Saldo pendiente'),
+      el('div',{style:{fontWeight:800,fontSize:20,color:'#fed7aa'}},diff>0?'Eva debe '+(fmtM(Math.abs(diff)))+'':'Jorge debe '+(fmtM(Math.abs(diff)))+''),
+      el('div',{style:{fontSize:12,color:'#64748b',marginTop:4}}, pend.length+' gastos · '+(fmtM(pend.reduce((s,e)=>s+parseFloat(e.amount||0),0)))+'')
+    );
+    wrap.appendChild(bc);
+  }
+
+  // Recent messages
+  if(S.messages.length>0){
+    const rc=el('div',{className:'card'});
+    rc.appendChild(el('div',{style:{fontWeight:700,fontSize:13,marginBottom:10,color:'#94a3b8',textTransform:'uppercase',fontSize:11,letterSpacing:.5}},'💬 Últimos mensajes'));
+    [...S.messages].slice(-3).forEach(m=>{
+      const r=el('div',{style:{display:'flex',gap:8,marginBottom:8,alignItems:'start'}});
+      r.append(badge(nameOf(m.from),'badge-'+(m.from==='J'?'J':'E')),el('div',{style:{fontSize:13,color:'#cbd5e1',flex:1}},m.text));
+      rc.appendChild(r);
+    });
+    const viewAll=el('button',{className:'btn-ghost',style:{width:'100%',marginTop:4,fontSize:11},onClick:()=>{S.tab=4;UI.agSubTab=1;render();}},'Ver todos →');
+    rc.appendChild(viewAll);
+    wrap.appendChild(rc);
+  }
+
+  // Quick notes
+  const NOTE_COLORS = {
+    yellow:{bg:'#422006',border:'#f59e0b',text:'#fde68a',dot:'#f59e0b'},
+    blue:  {bg:'#1e3a5f',border:'#3b82f6',text:'#bfdbfe',dot:'#3b82f6'},
+    green: {bg:'#064e3b',border:'#10b981',text:'#a7f3d0',dot:'#10b981'},
+    red:   {bg:'#450a0a',border:'#ef4444',text:'#fecaca',dot:'#ef4444'},
+  };
+  const nc=el('div',{className:'card',style:{marginBottom:12}});
+  const nh=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}});
+  nh.append(
+    el('div',{style:{fontWeight:700,fontSize:14}},'📌 Notas rápidas'),
+    el('div',{style:{fontSize:11,color:'#64748b'}},'Visibles para ambos')
+  );
+  nc.appendChild(nh);
+
+  // Existing notes
+  if(S.notes.length>0){
+    const noteList=el('div',{style:{display:'flex',flexDirection:'column',gap:8,marginBottom:10}});
+    [...S.notes].slice(0,5).forEach(n=>{
+      const c=NOTE_COLORS[n.color]||NOTE_COLORS.yellow;
+      const nr=el('div',{style:{background:c.bg,border:'1px solid '+c.border+'22',borderLeft:'3px solid '+c.border,borderRadius:10,padding:'9px 12px',display:'flex',justifyContent:'space-between',alignItems:'start',gap:8}});
+      const ni=el('div',{style:{flex:1}});
+      ni.append(
+        el('div',{style:{fontSize:13,color:c.text,lineHeight:1.4}},n.text),
+        el('div',{style:{fontSize:10,color:c.border+'99',marginTop:4}},(n.from_user==='J'?'Jorge':'Eva')+' · '+new Date(n.created_at).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}))
+      );
+      const delBtn=el('button',{style:{background:'none',border:'none',color:c.border+'66',fontSize:13,cursor:'pointer',flexShrink:0},onClick:()=>dbDelNote(n.id)},'✕');
+      nr.append(ni,delBtn);
+      noteList.appendChild(nr);
+    });
+    nc.appendChild(noteList);
+    if(S.notes.length>5) nc.appendChild(el('div',{style:{fontSize:11,color:'#475569',marginBottom:8}},'+'+(S.notes.length-5)+' notas más'));
+  } else {
+    nc.appendChild(el('div',{style:{color:'#475569',fontSize:12,marginBottom:10,fontStyle:'italic'}},'Sin notas. Añade un recordatorio rápido para ambos…'));
+  }
+
+  // Add note form
+  const nForm=el('div',{style:{display:'flex',gap:6,alignItems:'start',flexWrap:'wrap'}});
+  const nInp=el('textarea',{className:'input',style:{flex:'1 1 200px',minHeight:38,resize:'none',lineHeight:1.4,fontSize:13}});
+  nInp.placeholder='Escribe una nota rápida…';
+  nInp.value=UI.noteText||'';
+  nInp.addEventListener('input',e=>UI.noteText=e.target.value);
+  nInp.addEventListener('keydown',async e=>{
+    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(UI.noteText.trim()){await dbAddNote(UI.noteText.trim(),UI.noteColor);UI.noteText='';}}
+  });
+
+  // Color picker
+  const colorPick=el('div',{style:{display:'flex',gap:4,alignItems:'center',flexShrink:0}});
+  Object.entries(NOTE_COLORS).forEach(([k,c])=>{
+    colorPick.appendChild(el('button',{
+      style:{width:18,height:18,borderRadius:'50%',background:c.dot,border:UI.noteColor===k?'2px solid #fff':'2px solid transparent',cursor:'pointer'},
+      onClick:()=>{UI.noteColor=k;render();}
+    },''));
+  });
+
+  const nBtn=el('button',{className:'btn-primary',style:{padding:'8px 12px',fontSize:12,flexShrink:0},onClick:async()=>{
+    if(UI.noteText.trim()){await dbAddNote(UI.noteText.trim(),UI.noteColor);UI.noteText='';}
+  }},'Añadir');
+  nForm.append(nInp,el('div',{style:{display:'flex',flexDirection:'column',gap:6}},[colorPick,nBtn]));
+  nc.appendChild(nForm);
+  wrap.appendChild(nc);
+
+  return wrap;
+}
+
+// ── CUSTODIA ──────────────────────────────────────────────────────────────────
+function renderCustodia(){
+  const wrap=el('div',{});
+
+  // View toggle
+  const tgl=el('div',{className:'toggle-row'});
+  [['month','Mes'],['week','Semana']].forEach(([v,l])=>{
+    tgl.appendChild(el('button',{className:'toggle-btn'+(UI.calView===v?' active':''),onClick:()=>{UI.calView=v;render();}},l));
+  });
+  wrap.appendChild(tgl);
+
+  if(UI.calView==='month') wrap.appendChild(renderCalMonth());
+  else wrap.appendChild(renderCalWeek());
+
+  // Selected event detail
+  if(UI.calSelected){
+    const s=UI.calSelected;
+    const sc=el('div',{className:'card fade-in',style:{borderLeft:'3px solid '+(CUSTODY_TEXT[s.who])+'',marginBottom:12}});
+    const top=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'start'}});
+    const info=el('div',{style:{flex:1}});
+    info.append(
+      el('div',{style:{fontWeight:700,fontSize:14,color:CUSTODY_TEXT[s.who],marginBottom:4}},nameOf(s.who)+': '+fmt(s.from)+' → '+fmt(s.to)+' · '+(daysBetween(s.from,s.to))+'d'),
+    );
+    if(s.note) info.appendChild(el('div',{style:{fontSize:12,color:'#64748b',marginBottom:4}},s.note));
+    if(s.changeStatus==='pendiente') info.appendChild(el('div',{style:{background:'#422006',color:'#fed7aa',borderRadius:8,padding:'5px 10px',fontSize:11,marginBottom:6}},'⏳ Solicitud pendiente de confirmar'));
+    const btns=el('div',{style:{display:'flex',gap:6,flexShrink:0}});
+    if(s.changeStatus==='pendiente'){
+      btns.append(
+        el('button',{className:'btn-success',onClick:()=>dbUpdEvent(s.id,{change_status:'confirmado'}).then(()=>UI.calSelected=null)},'✓ Confirmar'),
+        el('button',{className:'btn-danger',onClick:()=>dbDelEvent(s.id).then(()=>UI.calSelected=null)},'✗ Rechazar')
+      );
+    }
+    btns.appendChild(el('button',{className:'btn-danger',onClick:()=>dbDelEvent(s.id).then(()=>UI.calSelected=null)},'Borrar'));
+    top.append(info,btns);sc.appendChild(top);wrap.appendChild(sc);
+  }
+
+  // Add period button
+  wrap.appendChild(el('button',{className:'btn-primary',style:{width:'100%',marginBottom:10,padding:12},onClick:()=>{UI.showEventForm=!UI.showEventForm;UI.showWeekGen=false;render();}},UI.showEventForm?'Cancelar':'+ Añadir periodo'));
+
+  // AI event parser button
+  wrap.appendChild(el('button',{className:'btn-ghost',style:{width:'100%',marginBottom:8,fontSize:12},onClick:()=>{UI.showAiParser=!UI.showAiParser;UI.showEventForm=false;UI.showWeekGen=false;render();}},UI.showAiParser?'Cancelar':'🤖 Crear evento con IA (describe en texto)'));
+  if(UI.showAiParser) wrap.appendChild(renderAiEventParser());
+
+  // Weekly schedule generator button
+  wrap.appendChild(el('button',{className:'btn-ghost',style:{width:'100%',marginBottom:12,fontSize:12},onClick:()=>{UI.showWeekGen=!UI.showWeekGen;UI.showEventForm=false;UI.showAiParser=false;render();}},UI.showWeekGen?'Cancelar':'⚙️ Generar turnos semanales automáticos'));
+
+  if(UI.showEventForm) wrap.appendChild(renderEventForm());
+  if(UI.showWeekGen)   wrap.appendChild(renderWeekGenForm());
+
+  // Upcoming events
+  const upcoming=[...S.events].filter(ev=>ev.to>=today()&&ev.changeStatus!=='rechazado').sort((a,b)=>a.from.localeCompare(b.from)).slice(0,8);
+  if(upcoming.length){
+    wrap.appendChild(el('div',{style:{fontSize:11,fontWeight:700,color:'#475569',marginBottom:8,textTransform:'uppercase',letterSpacing:.5}},'Próximos periodos'));
+    upcoming.forEach(ev=>{
+      const r=el('div',{className:'card',style:{marginBottom:8,cursor:'pointer',borderLeft:'3px solid '+(ev.changeStatus==='pendiente'?'#475569':CUSTODY_TEXT[ev.who])+'',padding:'12px 14px'},onClick:()=>{UI.calSelected=ev;render();}});
+      const t=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center'}});
+      t.append(
+        el('div',{style:{display:'flex',gap:8,alignItems:'center'}},[badge(nameOf(ev.who),'badge-'+ev.who),ev.changeStatus==='pendiente'?badge('Pendiente','badge-warn'):badge('Confirmado','badge-ok')]),
+        el('div',{style:{fontSize:12,color:'#475569'}},fmt(ev.from)+' → '+fmt(ev.to)+' · '+(daysBetween(ev.from,ev.to))+'d')
+      );
+      r.appendChild(t);
+      if(ev.note) r.appendChild(el('div',{style:{fontSize:11,color:'#475569',marginTop:3}},ev.note));
+      wrap.appendChild(r);
+    });
+  }
+
+  return wrap;
+}
+
+function renderCalMonth(){
+  const wrap=el('div',{});
+  const nav=el('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14}});
+  nav.append(
+    el('button',{className:'btn-sm',onClick:()=>{if(UI.calMonth===0){UI.calMonth=11;UI.calYear--;}else UI.calMonth--;render();}},'←'),
+    el('span',{style:{fontWeight:700,fontSize:15}},MONTHS_L[UI.calMonth]+' '+(UI.calYear)+''),
+    el('button',{className:'btn-sm',onClick:()=>{if(UI.calMonth===11){UI.calMonth=0;UI.calYear++;}else UI.calMonth++;render();}},'→')
+  );
+
+  // Legend
+  const leg=el('div',{style:{display:'flex',gap:14,marginBottom:12,flexWrap:'wrap',alignItems:'center'}});
+  [['J','Jorge','#60a5fa'],['E','Eva','#a78bfa'],['ambos','Ambos','#6ee7b7'],['wed','Miérc. opcional','#f97316'],['fest','Festivo','#f59e0b']].forEach(([k,l,color])=>{
+    const d=el('div',{style:{display:'flex',alignItems:'center',gap:6}});
+    d.append(
+      el('div',{style:{width:12,height:12,borderRadius:3,background:k==='wed'?'#431407':k==='fest'?'#451a03':color,border:k==='wed'?'1px dashed #f97316':k==='fest'?'1px solid #f59e0b':'none'}}),
+      el('span',{style:{fontSize:11,color:'#94a3b8'}},l)
+    );
+    leg.appendChild(d);
+  });
+
+  // Build day map — miércoles fijo gets special treatment
+  const dayMap={};
+  const wedMap={};
+  S.events.forEach(ev=>{
+    if(ev.changeStatus==='rechazado') return;
+    if(ev.note==='Miércoles fijo'&&ev.from===ev.to){
+      wedMap[ev.from]=ev; return;
+    }
+    let d=new Date(ev.from+'T12:00:00'),end=new Date(ev.to+'T12:00:00');
+    while(d<=end){
+      const k=d.toISOString().slice(0,10);
+      if(!wedMap[k]) dayMap[k]=ev;
+      d.setDate(d.getDate()+1);
+    }
+  });
+
+  const cal=el('div',{className:'card-dark',style:{padding:10,marginBottom:14}});
+  const calHdr=el('div',{className:'cal-grid',style:{marginBottom:4}});
+  ['L','M','X','J','V','S','D'].forEach(d=>calHdr.appendChild(el('div',{className:'cal-day-hdr'},d)));
+  cal.appendChild(calHdr);
+
+  const firstDay=new Date(UI.calYear,UI.calMonth,1).getDay();
+  const dim=new Date(UI.calYear,UI.calMonth+1,0).getDate();
+  const offset=(firstDay+6)%7;
+  const grid=el('div',{className:'cal-grid'});
+
+  for(let i=0;i<offset;i++) grid.appendChild(el('div',{}));
+  for(let n=1;n<=dim;n++){
+    const key=String(UI.calYear)+'-'+String(UI.calMonth+1).padStart(2,'0')+'-'+String(n).padStart(2,'0');
+    const ev=dayMap[key];
+    const wedEv=wedMap[key];
+    const isTdy=key===today();
+    const isPend=ev&&ev.changeStatus==='pendiente';
+
+    let bgColor='transparent', textColor='#94a3b8', borderStyle='none', clickEv=null;
+    if(wedEv){
+      bgColor='#431407'; textColor='#f97316'; borderStyle='1px dashed #f97316'; clickEv=wedEv;
+    } else if(ev&&!isPend){
+      bgColor=CUSTODY_BG[ev.who]; textColor=CUSTODY_TEXT[ev.who]; clickEv=ev;
+    } else if(isPend){
+      borderStyle='1px dashed #475569'; clickEv=ev;
+    }
+
+    const isFest = isFestivo(key);
+    const cell=el('div',{
+      className:'cal-cell'+(ev||wedEv?' has-event':''),
+      style:{background:bgColor,position:'relative'},
+      title:isFest?festivoName(key):'',
+      onClick:()=>{if(clickEv){UI.calSelected=clickEv;render();} else if(isFest){ alert('🎉 '+festivoName(key)); }}
+    });
+    cell.appendChild(el('div',{
+      className:'cal-num'+(isTdy?' today':''),
+      style:{color:isTdy?'':isFest&&!ev&&!wedEv?'#f59e0b':textColor, border:isTdy?'none':borderStyle}
+    },String(n)));
+    if(wedEv&&!isTdy) cell.appendChild(el('div',{style:{width:5,height:5,borderRadius:'50%',background:'#f97316',marginTop:1}}));
+    if(isFest) cell.appendChild(el('div',{style:{width:5,height:5,borderRadius:'50%',background:'#f59e0b',marginTop:1,opacity:.9}}));
+    grid.appendChild(cell);
+  }
+  cal.appendChild(grid);
+  wrap.append(nav,leg,cal);
+  return wrap;
+}
+
+function renderCalWeek(){
+  const wrap=el('div',{});
+  // Get Monday of current week
+  const ref=new Date(); ref.setHours(12,0,0,0);
+  const dow=ref.getDay(); const diff=dow===0?-6:1-dow;
+  ref.setDate(ref.getDate()+diff+UI.weekOffset*7);
+
+  const nav=el('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14}});
+  nav.append(
+    el('button',{className:'btn-sm',onClick:()=>{UI.weekOffset=(UI.weekOffset||0)-1;render();}},'←'),
+    el('span',{style:{fontWeight:700,fontSize:14}},'Semana del '+ref.toLocaleDateString('es-ES',{day:'numeric',month:'short'})),
+    el('button',{className:'btn-sm',onClick:()=>{UI.weekOffset=(UI.weekOffset||0)+1;render();}},'→')
+  );
+
+  const dayMap={};
+  S.events.forEach(ev=>{
+    if(ev.changeStatus==='rechazado') return;
+    let d=new Date(ev.from+'T12:00:00'),end=new Date(ev.to+'T12:00:00');
+    while(d<=end){dayMap[d.toISOString().slice(0,10)]=ev;d.setDate(d.getDate()+1);}
+  });
+
+  const DNAMES=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  const hdrRow=el('div',{className:'week-row'});
+  const bodyRow=el('div',{className:'week-row'});
+
+  for(let i=0;i<7;i++){
+    const d=new Date(ref); d.setDate(d.getDate()+i);
+    const key=d.toISOString().slice(0,10);
+    const ev=dayMap[key];
+    const isTdy=key===today();
+    hdrRow.appendChild(el('div',{style:{textAlign:'center',fontSize:10,fontWeight:700,color:isTdy?'#60a5fa':'#475569',paddingBottom:4}},DNAMES[i]));
+    const isFestD=isFestivo(key);
+    const festNm=festivoName(key);
+    const cell=el('div',{
+      className:'week-cell',
+      style:{background:ev?CUSTODY_BG[ev.who]:'#1e293b',border:isTdy?'1px solid #3b82f6':isFestD?'1px solid #f59e0b22':'1px solid #334155',cursor:(ev||isFestD)?'pointer':'default'},
+      title:isFestD?festNm:'',
+      onClick:()=>{if(ev){UI.calSelected=ev;render();}else if(isFestD){alert('🎉 '+festNm);}}
+    });
+    cell.append(
+      el('div',{style:{fontSize:15,fontWeight:isTdy?800:600,color:ev?CUSTODY_TEXT[ev.who]:isFestD?'#f59e0b':'#475569'}},String(d.getDate())),
+      ev?el('div',{style:{fontSize:10,color:CUSTODY_TEXT[ev.who],fontWeight:700}},nameOf(ev.who)):el('div',{style:{fontSize:10,color:isFestD?'#f59e0b':'#334155'}},isFestD?'🎉':'—')
+    );
+    bodyRow.appendChild(cell);
+  }
+  wrap.append(nav,hdrRow,bodyRow);
+  return wrap;
+}
+
+function renderEventForm(){
+  const f=UI.eventForm;
+  const form=el('div',{className:'card fade-in',style:{marginBottom:12}});
+  form.append(
+    row(col([lbl('Desde'),inp('date',f.from,v=>UI.eventForm.from=v)]),col([lbl('Hasta'),inp('date',f.to,v=>UI.eventForm.to=v)])),
+  );
+  form.appendChild(el('div',{style:{marginBottom:10}},[
+    lbl('Con quién'),
+    el('div',{style:{display:'flex',gap:8}},[
+      ['J','Jorge'],['E','Eva'],['ambos','Ambos']].map(([k,l])=>el('button',{
+        style:{flex:1,padding:9,borderRadius:9,border:'1px solid',borderColor:f.who===k?CUSTODY_TEXT[k]:'#334155',background:f.who===k?CUSTODY_BG[k]:'transparent',color:f.who===k?CUSTODY_TEXT[k]:'#64748b',fontWeight:f.who===k?700:400,fontSize:12},
+        onClick:()=>{UI.eventForm.who=k;render();}},l))
+    )
+  ]));
+  form.append(
+    el('div',{style:{marginBottom:10}},[lbl('Nota (opcional)'),inp('text',f.note,v=>UI.eventForm.note=v,'Ej: Vacaciones de verano')]),
+  );
+  const chkWrap=el('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:14}});
+  const chk=el('input',{type:'checkbox'});chk.checked=f.changeRequest;chk.addEventListener('change',e=>UI.eventForm.changeRequest=e.target.checked);
+  chkWrap.append(chk,el('label',{style:{fontSize:12,color:'#64748b'}},'Marcar como solicitud de cambio (requiere confirmación)'));
+  form.appendChild(chkWrap);
+  form.appendChild(el('button',{className:'btn-primary',style:{width:'100%'},onClick:async()=>{
+    if(!f.from||!f.to) return;
+    await dbAddEvent(f);
+    UI.showEventForm=false;UI.eventForm={from:today(),to:today(),who:'J',note:'',changeRequest:false};
+  }},'Guardar periodo'));
+  return form;
+}
+
+function renderWeekGenForm(){
+  const f=UI.weekGen;
+  const form=el('div',{className:'card fade-in',style:{marginBottom:12,borderColor:'#1e3a5f'}});
+  form.appendChild(el('div',{style:{fontWeight:700,fontSize:14,marginBottom:12,color:'#60a5fa'}},'⚙️ Generador de turnos semanales'));
+  form.appendChild(el('div',{style:{fontSize:12,color:'#64748b',marginBottom:14,lineHeight:1.6}},'Genera automáticamente los turnos para los próximos meses. Los turnos existentes no se borran.'));
+
+  form.append(
+    row(
+      col([lbl('Fecha inicio (lunes)'),inp('date',f.startDate,v=>UI.weekGen.startDate=v)]),
+      col([lbl('Semanas a generar'),inp('number',f.weeks,v=>UI.weekGen.weeks=parseInt(v)||12,'12')])
+    ),
+    el('div',{style:{marginBottom:10}},[
+      lbl('Primera semana para'),
+      el('div',{style:{display:'flex',gap:8}},[
+        ['J','Jorge'],['E','Eva']].map(([k,l])=>el('button',{
+          style:{flex:1,padding:9,borderRadius:9,border:'1px solid',borderColor:f.startWith===k?CUSTODY_TEXT[k]:'#334155',background:f.startWith===k?CUSTODY_BG[k]:'transparent',color:f.startWith===k?CUSTODY_TEXT[k]:'#64748b',fontWeight:f.startWith===k?700:400,fontSize:12},
+          onClick:()=>{UI.weekGen.startWith=k;render();}},l))
+      )
+    ]),
+    el('div',{style:{marginBottom:14}},[
+      lbl('Miércoles'),
+      el('div',{style:{display:'flex',gap:6,flexWrap:'wrap'}},[
+        ['none','Incluido en turno semanal'],['fixed_other','Siempre con el otro progenitor']].map(([k,l])=>el('button',{
+          style:{padding:'8px 12px',borderRadius:9,border:'1px solid',borderColor:f.wednesdayMode===k?'#3b82f6':'#334155',background:f.wednesdayMode===k?'#1e3a5f':'transparent',color:f.wednesdayMode===k?'#60a5fa':'#64748b',fontSize:12,fontWeight:f.wednesdayMode===k?700:400},
+          onClick:()=>{UI.weekGen.wednesdayMode=k;render();}},l))
+      )
+    ])
+  );
+
+  // Preview
+  const preview=generateWeeklySchedule(f.startDate,Math.min(f.weeks,4),f.wednesdayMode);
+  if(preview.length){
+    form.appendChild(el('div',{style:{fontSize:11,color:'#475569',marginBottom:8,textTransform:'uppercase',letterSpacing:.5}},'Vista previa (primeras 4 semanas)'));
+    const prev=el('div',{className:'card-dark',style:{padding:10,marginBottom:12}});
+    preview.slice(0,8).forEach(p=>{
+      const r=el('div',{style:{display:'flex',justifyContent:'space-between',padding:'4px 0',borderBottom:'1px solid #1e293b'}});
+      r.append(el('span',{style:{fontSize:12,color:CUSTODY_TEXT[p.who],fontWeight:600}},nameOf(p.who)),el('span',{style:{fontSize:11,color:'#475569'}},fmt(p.from)+' → '+fmt(p.to)+' · '+p.note));
+      prev.appendChild(r);
+    });
+    form.appendChild(prev);
+  }
+
+  form.appendChild(el('button',{className:'btn-primary',style:{width:'100%'},onClick:async()=>{
+    const events=generateWeeklySchedule(f.startDate,f.weeks,f.wednesdayMode);
+    // Adjust startWith
+    let whoWeek=f.startWith;
+    const finalEvents=events.map(e=>{
+      // already assigned in generator — but we need to override with startWith
+      return e;
+    });
+    // Regenerate with correct startWith
+    const corrected=[];
+    let cur=new Date(f.startDate+'T12:00:00');
+    let who=f.startWith;
+    const other=who==='J'?'E':'J';
+    for(let w=0;w<f.weeks;w++){
+      const mon=new Date(cur);const sun=new Date(cur);sun.setDate(sun.getDate()+6);
+      const wed=new Date(cur);wed.setDate(wed.getDate()+2);
+      const thu=new Date(cur);thu.setDate(thu.getDate()+3);
+      const monStr=mon.toISOString().slice(0,10);const sunStr=sun.toISOString().slice(0,10);
+      const wedStr=wed.toISOString().slice(0,10);const thuStr=thu.toISOString().slice(0,10);
+      const ot=who==='J'?'E':'J';
+      if(f.wednesdayMode==='fixed_other'){
+        corrected.push({from:monStr,to:addDays(monStr,1),who,note:'Turno semanal (L-M)',changeRequest:false});
+        corrected.push({from:wedStr,to:wedStr,who:ot,note:'Miércoles fijo',changeRequest:false});
+        corrected.push({from:thuStr,to:sunStr,who,note:'Turno semanal (J-D)',changeRequest:false});
+      } else {
+        corrected.push({from:monStr,to:sunStr,who,note:'Turno semanal',changeRequest:false});
+      }
+      cur.setDate(cur.getDate()+7);who=ot;
+    }
+    await dbAddEventsBulk(corrected);
+    UI.showWeekGen=false;
+  }},'Generar turnos'));
+  return form;
+}
+
+// ── GASTOS ────────────────────────────────────────────────────────────────────
+function renderGastos(diff){
+  const wrap=el('div',{});
+  const pend=S.expenses.filter(e=>e.status==='pendiente');
+
+  if(pend.length>0){
+    const bc=el('div',{className:'card',style:{background:'#0f172a',borderColor:'#1e3a5f',marginBottom:14}});
+    bc.append(
+      el('div',{style:{fontSize:11,color:'#475569',marginBottom:6,textTransform:'uppercase',letterSpacing:.5}},'Saldo pendiente'),
+      el('div',{style:{fontWeight:800,fontSize:20,marginBottom:3,color:Math.abs(diff)>0?'#fb923c':'#6ee7b7'}},Math.abs(diff)<0.01?'Al día ✓':diff>0?'Eva debe '+(fmtM(Math.abs(diff)))+'':'Jorge debe '+(fmtM(Math.abs(diff)))+''),
+      el('div',{style:{fontSize:11,color:'#475569'}}, pend.length+' gastos · Total: '+(fmtM(pend.reduce((s,e)=>s+parseFloat(e.amount||0),0)))+'')
+    );
+    wrap.appendChild(bc);
+  }
+
+  // Filters
+  const fil=el('div',{style:{display:'flex',gap:6,marginBottom:12,flexWrap:'wrap'}});
+  [['todos','Todos'],['pendiente','Pendientes'],['liquidado','Liquidados']].forEach(([k,l])=>{
+    fil.appendChild(el('button',{
+      style:{padding:'5px 12px',borderRadius:20,border:'1px solid',borderColor:UI.expFilter===k?'#3b82f6':'#334155',background:UI.expFilter===k?'#1e3a5f':'transparent',color:UI.expFilter===k?'#60a5fa':'#64748b',fontSize:11,fontWeight:UI.expFilter===k?700:400},
+      onClick:()=>{UI.expFilter=k;render();}
+    },l));
+  });
+  const catSel=el('select',{className:'input',style:{width:'auto',padding:'5px 8px',fontSize:11}});
+  [['todas','Todas'],['Médico','Médico'],['Colegio','Colegio'],['Ropa','Ropa'],['Actividades','Actividades'],['Alimentación','Alimentación'],['Transporte','Transporte'],['Ocio','Ocio'],['Otro','Otro']].forEach(([v,l])=>{
+    const o=el('option',{value:v},l);if(v===UI.expCatFilter)o.selected=true;catSel.appendChild(o);
+  });
+  catSel.addEventListener('change',e=>{UI.expCatFilter=e.target.value;render();});
+  fil.appendChild(catSel);
+  wrap.appendChild(fil);
+
+  // List
+  let filtered=UI.expFilter==='todos'?S.expenses:S.expenses.filter(e=>e.status===UI.expFilter);
+  if(UI.expCatFilter!=='todas') filtered=filtered.filter(e=>e.cat===UI.expCatFilter);
+  filtered=[...filtered].sort((a,b)=>b.date.localeCompare(a.date));
+
+  if(!filtered.length) wrap.appendChild(el('div',{style:{textAlign:'center',color:'#475569',padding:'28px 0',fontSize:13}},'Sin gastos'));
+
+  filtered.forEach(e=>{
+    const age=Math.round((Date.now()-new Date(e.date+'T12:00:00'))/86400000);
+    const r=el('div',{className:'card',style:{marginBottom:10,opacity:e.status==='liquidado'?0.6:1,padding:'12px 14px'}});
+    const top=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'start'}});
+    const info=el('div',{style:{flex:1,minWidth:0}});
+    const tags=el('div',{style:{display:'flex',gap:6,marginBottom:5,flexWrap:'wrap',alignItems:'center'}});
+    tags.append(badge(e.cat,'badge-J'),el('span',{style:{fontSize:10,color:'#475569'}},fmt(e.date)));
+    if(e.status==='pendiente'&&age>=14) tags.appendChild(badge('⚠ '+(age)+'d','badge-warn'));
+    info.append(tags,el('div',{style:{fontWeight:700,fontSize:13,marginBottom:2}},e.desc),el('div',{style:{fontSize:11,color:'#64748b'}},fmtM(e.amount)+' · Paga '+(e.paidBy==='J'?'Jorge':'Eva')+' · '+(e.split)+''));
+    if(e.note) info.appendChild(el('div',{style:{fontSize:11,color:'#475569',marginTop:2,fontStyle:'italic'}},e.note));
+    if(e.receipt){
+      const thumb=el('img',{style:{width:48,height:48,borderRadius:6,objectFit:'cover',marginTop:6,cursor:'pointer'},onClick:()=>{ const w=window.open('','_blank'); w.document.write('<img src="'+(e.receipt)+'" style="max-width:100%;max-height:100vh">'); }});
+      thumb.src=e.receipt;
+      info.appendChild(thumb);
+    }
+    const btns=el('div',{style:{display:'flex',flexDirection:'column',gap:5,marginLeft:8}});
+    btns.append(
+      el('button',{className:e.status==='pendiente'?'badge badge-warn':'badge badge-ok',style:{border:'none',cursor:'pointer',padding:'4px 8px'},onClick:()=>dbToggleExpense(e.id)},e.status==='pendiente'?'Pendiente':'Liquidado'),
+      el('button',{className:'btn-danger',onClick:()=>dbDelExpense(e.id)},'✕')
+    );
+    top.append(info,btns);r.appendChild(top);wrap.appendChild(r);
+  });
+
+  wrap.appendChild(el('button',{className:'btn-primary',style:{width:'100%',marginTop:6,padding:11},onClick:()=>{UI.showExpForm=!UI.showExpForm;render();}},UI.showExpForm?'Cancelar':'+ Añadir gasto'));
+
+  if(UI.showExpForm){
+    const f=UI.expForm;
+    const form=el('div',{className:'card fade-in',style:{marginTop:10}});
+    form.append(
+      row(col([lbl('Fecha'),inp('date',f.date,v=>UI.expForm.date=v)]),col([lbl('Importe (€)'),inp('number',f.amount,v=>UI.expForm.amount=v,'0.00')])),
+      el('div',{style:{marginBottom:10}},[lbl('Descripción'),inp('text',f.desc,v=>UI.expForm.desc=v,'Ej: Ortodoncia Martina')]),
+    );
+    const r2=row(
+      col([lbl('Categoría'),sel(EXPENSE_CATS.map(c=>[c,c]),f.cat,v=>UI.expForm.cat=v)]),
+      col([lbl('Paga'),sel([['J','Jorge'],['E','Eva']],f.paidBy,v=>UI.expForm.paidBy=v)])
+    );
+    form.appendChild(r2);
+    const splitD=el('div',{style:{marginBottom:10}});splitD.appendChild(lbl('Reparto'));
+    const splitR=el('div',{style:{display:'flex',gap:6}});
+    ['50-50','100% Jorge','100% Eva'].forEach(s=>{
+      splitR.appendChild(el('button',{
+        style:{flex:1,padding:'8px 4px',borderRadius:9,border:'1px solid',borderColor:f.split===s?'#3b82f6':'#334155',background:f.split===s?'#1e3a5f':'transparent',color:f.split===s?'#60a5fa':'#64748b',fontSize:11,fontWeight:f.split===s?700:400},
+        onClick:()=>{UI.expForm.split=s;render();}},s));
+    });
+    splitD.appendChild(splitR);
+    form.append(splitD,el('div',{style:{marginBottom:12}},[lbl('Nota'),inp('text',f.note,v=>UI.expForm.note=v,'Contexto...')]));
+    form.appendChild(el('button',{className:'btn-primary',style:{width:'100%'},onClick:async()=>{
+      if(!f.desc||!f.amount)return;
+      await dbAddExpense(f);
+      UI.showExpForm=false;UI.expForm={date:today(),desc:'',amount:'',cat:'Médico',paidBy:'J',split:'50-50',status:'pendiente',note:'',receipt:null};
+    }},'Guardar gasto'));
+    wrap.appendChild(form);
+  }
+  return wrap;
+}
+
+// ── FICHA ─────────────────────────────────────────────────────────────────────
+function renderFicha(){
+  const {child,wishlist}=S;
+  const wrap=el('div',{});
+  const fields=[['dob','Fecha nacimiento','date'],['school','Colegio','text'],['doctor','Médico','text'],['ss','Nº SS','text'],['allergies','Alergias','text'],['size_clothes','Talla ropa','text'],['size_shoes','Talla zapatos','text'],['tutor1','Tutor autorizado 1','text'],['tutor2','Tutor autorizado 2','text']];
+
+  const c=el('div',{className:'card',style:{marginBottom:14}});
+  const ch=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}});
+  const av=el('div',{style:{display:'flex',alignItems:'center',gap:12}});
+  av.append(el('div',{style:{width:44,height:44,borderRadius:'50%',background:'#1e3a5f',display:'flex',alignItems:'center',justifyContent:'center',fontSize:22}},'👧'));
+  const ai=el('div',{});
+  ai.appendChild(el('div',{style:{fontWeight:800,fontSize:16}},child.name||'Menor'));
+  if(child.dob) ai.appendChild(el('div',{style:{fontSize:12,color:'#64748b'}},'Nacida el '+(fmt(child.dob))+' · '+(Math.floor((Date.now()-new Date(child.dob+'T12:00:00'))/31536000000))+' años'));
+  av.appendChild(ai);
+  ch.append(av,el('button',{className:'btn-ghost',style:{fontSize:11},onClick:()=>{UI.childEditing=!UI.childEditing;UI.childDraft={...child};render();}},UI.childEditing?'Cancelar':'✏️ Editar'));
+  c.appendChild(ch);
+
+  if(UI.childEditing){
+    c.append(el('div',{style:{marginBottom:10}},[lbl('Nombre'),inp('text',UI.childDraft.name||'',v=>UI.childDraft.name=v)]));
+    fields.forEach(([k,label,type])=>c.append(el('div',{style:{marginBottom:10}},[lbl(label),inp(type,UI.childDraft[k]||'',v=>UI.childDraft[k]=v,label)])));
+    const ta=el('textarea',{className:'input',style:{minHeight:60,resize:'vertical'}});ta.value=UI.childDraft.notes||'';ta.addEventListener('input',e=>UI.childDraft.notes=e.target.value);
+    c.append(el('div',{style:{marginBottom:12}},[lbl('Notas'),ta]));
+    c.appendChild(el('button',{className:'btn-primary',style:{width:'100%'},onClick:async()=>{await dbSaveChild(UI.childDraft);UI.childEditing=false;}},'Guardar ficha'));
+  } else {
+    if(!fields.some(([k])=>child[k])) c.appendChild(el('div',{style:{color:'#475569',fontSize:13,padding:'8px 0'}},'Pulsa Editar para añadir información'));
+    fields.filter(([k])=>child[k]).forEach(([k,label])=>{
+      const r=el('div',{style:{display:'flex',padding:'7px 0',borderBottom:'1px solid #0f172a'}});
+      r.append(el('div',{style:{width:140,fontSize:11,color:'#475569',flexShrink:0}},label),el('div',{style:{fontSize:13}},k==='dob'?fmt(child[k]):child[k]));
+      c.appendChild(r);
+    });
+    if(child.notes) c.appendChild(el('div',{style:{marginTop:10,padding:'8px 10px',background:'#0f172a',borderRadius:8,fontSize:12,color:'#64748b'}},child.notes));
+  }
+  wrap.appendChild(c);
+
+  // Wishlist
+  const wc=el('div',{className:'card'});
+  const wh=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}});
+  wh.append(el('div',{style:{fontWeight:700,fontSize:14}},'🎁 Lista de deseos'),el('button',{className:'btn-ghost',style:{fontSize:11},onClick:()=>{UI.showWishForm=!UI.showWishForm;render();}},UI.showWishForm?'Cancelar':'+ Añadir'));
+  wc.appendChild(wh);
+
+  if(UI.showWishForm){
+    const wf=UI.wishForm;
+    const wForm=el('div',{className:'card-dark',style:{marginBottom:12}});
+    wForm.append(el('div',{style:{marginBottom:8}},[lbl('Artículo'),inp('text',wf.item,v=>UI.wishForm.item=v,'Ej: Zapatillas talla 36')]));
+    wForm.append(row(col([lbl('Prioridad'),sel([['alta','Alta'],['normal','Normal'],['baja','Baja']],wf.priority,v=>UI.wishForm.priority=v)]),col([lbl('Propuesto por'),sel([['J','Jorge'],['E','Eva']],wf.requestedBy,v=>UI.wishForm.requestedBy=v)])));
+    wForm.appendChild(el('button',{className:'btn-primary',style:{width:'100%'},onClick:async()=>{if(!UI.wishForm.item)return;await dbAddWish(UI.wishForm);UI.showWishForm=false;UI.wishForm={item:'',priority:'normal',requestedBy:'J'};}},'Añadir'));
+    wc.appendChild(wForm);
+  }
+
+  const priC={alta:'#f87171',normal:'#60a5fa',baja:'#6ee7b7'};
+  ['alta','normal','baja'].forEach(p=>{
+    const items=wishlist.filter(w=>w.priority===p);if(!items.length)return;
+    wc.appendChild(el('div',{style:{fontSize:10,fontWeight:700,color:priC[p],textTransform:'uppercase',letterSpacing:.5,marginBottom:6,marginTop:10}},'Prioridad '+(p)+''));
+    items.forEach(w=>{
+      const r=el('div',{style:{display:'flex',alignItems:'center',gap:8,padding:'7px 0',borderBottom:'1px solid #0f172a',opacity:w.done?0.5:1}});
+      const chk=el('button',{style:{width:20,height:20,borderRadius:4,border:'1px solid',borderColor:w.done?'#059669':'#334155',background:w.done?'#059669':'transparent',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:10},onClick:()=>dbToggleWish(w.id)},w.done?'✓':'');
+      r.append(chk,el('div',{style:{flex:1,fontSize:13,textDecoration:w.done?'line-through':'none',color:w.done?'#475569':'#e2e8f0'}},w.item),badge(nameOf(w.requestedBy),'badge-'+(w.requestedBy==='J'?'J':'E')),el('button',{style:{background:'none',border:'none',color:'#475569',fontSize:12,cursor:'pointer'},onClick:()=>dbDelWish(w.id)},'✕'));
+      wc.appendChild(r);
+    });
+  });
+  if(!wishlist.length) wc.appendChild(el('div',{style:{color:'#475569',fontSize:13,padding:'10px 0'}},'Sin artículos'));
+  wrap.appendChild(wc);
+  return wrap;
+}
+
+// ── ACUERDOS + MENSAJES ───────────────────────────────────────────────────────
+function renderAcuerdos(){
+  const {agreements,messages}=S;
+  const wrap=el('div',{});
+  const tgl=el('div',{className:'toggle-row'});
+  [['acuerdos','📝 Acuerdos'],['mensajes','💬 Registro']].forEach(([v,l],i)=>{
+    tgl.appendChild(el('button',{className:'toggle-btn'+(UI.agSubTab===i?' active':''),onClick:()=>{UI.agSubTab=i;render();}},l));
+  });
+  wrap.appendChild(tgl);
+
+  if(UI.agSubTab===0){
+    const active=agreements.filter(a=>a.status==='activo');
+    const archived=agreements.filter(a=>a.status==='archivado');
+    if(!active.length&&!UI.showAgForm) wrap.appendChild(el('div',{style:{color:'#475569',fontSize:13,padding:'20px 0',textAlign:'center'}},'Sin acuerdos activos'));
+    active.forEach(a=>{
+      const c=CAT_COLORS[a.category]||'#64748b';
+      const r=el('div',{className:'card',style:{marginBottom:10,borderLeft:'3px solid '+(c)+'',padding:'12px 14px'}});
+      const t=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'start'}});
+      const info=el('div',{style:{flex:1}});
+      info.append(el('div',{style:{display:'flex',gap:6,marginBottom:4,alignItems:'center'}},[badge(a.category,'badge-J'),el('span',{style:{fontSize:10,color:'#475569'}},fmt(a.date))]));
+      info.append(el('div',{style:{fontWeight:700,fontSize:13,marginBottom:a.detail?3:0}},a.title));
+      if(a.detail) info.appendChild(el('div',{style:{fontSize:12,color:'#64748b',lineHeight:1.5}},a.detail));
+      const btns=el('div',{style:{display:'flex',flexDirection:'column',gap:5,marginLeft:10}});
+      btns.append(el('button',{className:'btn-ghost',style:{fontSize:10},onClick:()=>dbToggleAgreement(a.id)},'Archivar'),el('button',{className:'btn-danger',onClick:()=>dbDelAgreement(a.id)},'✕'));
+      t.append(info,btns);r.appendChild(t);wrap.appendChild(r);
+    });
+    // Templates button
+    wrap.appendChild(el('button',{className:'btn-ghost',style:{width:'100%',marginBottom:8,fontSize:12},onClick:()=>{UI.agTemplateOpen=!UI.agTemplateOpen;render();}},UI.agTemplateOpen?'Cerrar plantillas':'📋 Usar plantilla de acuerdo'));
+    if(UI.agTemplateOpen){
+      const tmplWrap=el('div',{className:'card-dark',style:{marginBottom:12}});
+      tmplWrap.appendChild(el('div',{style:{fontSize:11,color:'#64748b',marginBottom:10}},'Selecciona una plantilla para editar y guardar:'));
+      // Group by category
+      const cats=[...new Set(AG_TEMPLATES.map(t=>t.category))];
+      cats.forEach(cat=>{
+        tmplWrap.appendChild(el('div',{style:{fontSize:10,fontWeight:700,color:'#475569',textTransform:'uppercase',letterSpacing:.5,marginBottom:6,marginTop:8}},cat));
+        AG_TEMPLATES.filter(t=>t.category===cat).forEach(t=>{
+          const tb=el('button',{
+            style:{display:'block',width:'100%',textAlign:'left',padding:'9px 12px',marginBottom:6,background:'#1e293b',border:'1px solid #334155',borderRadius:9,cursor:'pointer'},
+            onClick:()=>{
+              UI.agForm={date:today(),title:t.title,detail:t.detail,category:t.category};
+              UI.agTemplateOpen=false;
+              UI.showAgForm=true;
+              render();
+            }
+          });
+          tb.append(el('div',{style:{fontSize:13,fontWeight:600,color:'#e2e8f0',marginBottom:2}},t.title),el('div',{style:{fontSize:11,color:'#475569'}},t.detail.slice(0,60)+'…'));
+          tmplWrap.appendChild(tb);
+        });
+      });
+      wrap.appendChild(tmplWrap);
+    }
+    wrap.appendChild(el('button',{className:'btn-primary',style:{width:'100%',marginBottom:10,padding:11},onClick:()=>{UI.showAgForm=!UI.showAgForm;render();}},UI.showAgForm?'Cancelar':'+ Registrar acuerdo'));
+    if(UI.showAgForm){
+      const f=UI.agForm;
+      const form=el('div',{className:'card fade-in',style:{marginBottom:12}});
+      form.append(
+        row(col([lbl('Fecha'),inp('date',f.date,v=>UI.agForm.date=v)]),col([lbl('Categoría'),sel(Object.keys(CAT_COLORS).map(k=>[k,k]),f.category,v=>UI.agForm.category=v)])),
+        el('div',{style:{marginBottom:10}},[lbl('Acuerdo'),inp('text',f.title,v=>UI.agForm.title=v,'Ej: Martina empieza natación los martes')]),
+      );
+      const ta=el('textarea',{className:'input',style:{minHeight:70,resize:'vertical'}});ta.value=f.detail;ta.addEventListener('input',e=>UI.agForm.detail=e.target.value);
+      form.append(el('div',{style:{marginBottom:12}},[lbl('Detalle'),ta]));
+      form.appendChild(el('button',{className:'btn-primary',style:{width:'100%'},onClick:async()=>{if(!UI.agForm.title)return;await dbAddAgreement(UI.agForm);UI.showAgForm=false;UI.agForm={date:today(),title:'',detail:'',category:'General'};}},'Guardar'));
+      wrap.appendChild(form);
+    }
+    if(archived.length){
+      wrap.appendChild(el('div',{style:{fontSize:11,fontWeight:700,color:'#475569',marginTop:16,marginBottom:8,textTransform:'uppercase',letterSpacing:.5}},'Archivados ('+(archived.length)+')'));
+      archived.forEach(a=>{
+        const r=el('div',{className:'card',style:{marginBottom:8,opacity:.5,padding:'10px 14px'}});
+        const t=el('div',{style:{display:'flex',justifyContent:'space-between'}});
+        t.append(el('div',{},[el('div',{style:{fontSize:10,color:'#475569',marginBottom:2}},fmt(a.date)+' · '+a.category),el('div',{style:{fontSize:13,fontWeight:600}},a.title)]),el('button',{className:'btn-ghost',style:{fontSize:10,alignSelf:'start'},onClick:()=>dbToggleAgreement(a.id)},'Restaurar'));
+        r.appendChild(t);wrap.appendChild(r);
+      });
+    }
+  }
+
+  if(UI.agSubTab===1){
+    const msgToolbar=el('div',{style:{display:'flex',gap:8,marginBottom:12,alignItems:'center'}});
+    msgToolbar.append(
+      el('div',{className:'card-dark',style:{flex:1,padding:'8px 12px',fontSize:11,color:'#475569',marginBottom:0}},'📌 Registro con sello de tiempo. No se pueden editar.'),
+      el('button',{className:'btn-ghost',style:{fontSize:11,flexShrink:0,whiteSpace:'nowrap'},onClick:exportMessagesPDF},'📄 Exportar PDF')
+    );
+    wrap.appendChild(msgToolbar);
+    const mb=el('div',{className:'msg-area',id:'msgBox'});
+    if(!messages.length) mb.appendChild(el('div',{style:{textAlign:'center',color:'#334155',padding:'60px 0',fontSize:13}},'Sin mensajes'));
+    messages.forEach(m=>{
+      const isMe=m.from===S.user?.role;
+      const mw=el('div',{style:{display:'flex',justifyContent:isMe?'flex-end':'flex-start',marginBottom:10}});
+      const mi=el('div',{style:{maxWidth:'75%'}});
+      mi.append(el('div',{className:isMe?'bubble-J':'bubble-E',style:{fontSize:13,lineHeight:1.5}},m.text),el('div',{style:{fontSize:10,color:'#334155',marginTop:3,textAlign:isMe?'right':'left'}},nameOf(m.from)+' · '+new Date(m.ts).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})));
+      mw.appendChild(mi);mb.appendChild(mw);
+    });
+    setTimeout(()=>{const b=document.getElementById('msgBox');if(b)b.scrollTop=b.scrollHeight;},50);
+    const ir=el('div',{style:{display:'flex',gap:8,alignItems:'start',marginTop:10}});
+    const ta=el('textarea',{className:'input',style:{flex:1,minHeight:44,resize:'none',lineHeight:1.5}});
+    ta.placeholder='Escribe un mensaje… (Enter para enviar)';
+    ta.addEventListener('keydown',async e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const t=ta.value.trim();if(t){await dbSendMsg(t);ta.value='';}}} );
+    ir.append(ta,el('button',{className:'btn-primary',style:{padding:'10px 14px',flexShrink:0},onClick:async()=>{const t=ta.value.trim();if(t){await dbSendMsg(t);ta.value='';}}},'→'));
+    wrap.append(mb,ir);
+  }
+  return wrap;
+}
+
+
+
+
+// ── Export messages to PDF ────────────────────────────────────────────────────
+function exportMessagesPDF(){
+  const {messages,child}=S;
+  const now=new Date().toLocaleDateString('es-ES');
+  const rows=messages.map(m=>`
+    <tr>
+      <td style="width:80px;color:#64748b;font-size:10px">${new Date(m.ts).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+      <td style="width:50px;font-weight:700;color:${m.from==='J'?'#2563eb':'#7c3aed'}">${nameOf(m.from)}</td>
+      <td style="font-size:12px">${m.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
+    </tr>`).join('');
+  const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Registro de comunicaciones</title>
+<style>body{font-family:Arial,sans-serif;font-size:12px;color:#1e293b;margin:30px;line-height:1.5}
+h1{font-size:18px;margin-bottom:4px}h2{font-size:13px;color:#2563eb;margin:18px 0 8px;border-bottom:1px solid #e2e8f0;padding-bottom:3px}
+table{width:100%;border-collapse:collapse}td{padding:7px 9px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.meta{color:#64748b;font-size:11px;margin-bottom:20px}.footer{margin-top:28px;font-size:10px;color:#94a3b8;border-top:1px solid #e2e8f0;padding-top:8px}</style>
+</head><body>
+<h1>💬 Registro de comunicaciones</h1>
+<div class="meta">Jorge · Eva · ${child.name||'Martina'} · Generado el ${now} · ${messages.length} mensajes</div>
+<h2>Historial completo</h2>
+<table>${rows}</table>
+<div class="footer">Documento de registro privado con sello de tiempo. Los mensajes no han sido editados ni eliminados desde su envío.</div>
+</body></html>`;
+  const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),400);
+}
+
+// ── Alert config helpers ──────────────────────────────────────────────────────
+function saveAlertConfig(days){
+  UI.alertDaysBefore=days;
+  localStorage.setItem('cp:alertDays',String(days));
+  // Reschedule with new config
+  scheduleUpcomingNotificationsWithConfig(days);
+}
+function scheduleUpcomingNotificationsWithConfig(daysBefore){
+  if(Notification.permission!=='granted') return;
+  const todayStr=today();
+  S.events.filter(ev=>ev.from>=todayStr&&ev.changeStatus!=='rechazado').slice(0,20).forEach(ev=>{
+    const msAlert=new Date(addDays(ev.from,-daysBefore)+'T20:00:00').getTime()-Date.now();
+    const msDay=new Date(ev.from+'T08:00:00').getTime()-Date.now();
+    if(msAlert>0) setTimeout(()=>fireNotif(`🔔 Cambio de custodia en ${daysBefore}d`,`${S.child.name||'Martina'} pasa con ${nameOf(ev.who)} el ${fmt(ev.from)}`),msAlert);
+    if(msDay>0) setTimeout(()=>fireNotif('📅 Cambio de custodia hoy',`${S.child.name||'Martina'} pasa con ${nameOf(ev.who)} hoy`),msDay);
+  });
+}
+
+
+// ── Activity log (local + shared via messages meta) ───────────────────────────
+function logActivity(action, entity, detail){
+  try {
+    const logs = JSON.parse(localStorage.getItem('cp:actlog')||'[]');
+    logs.unshift({ts:new Date().toISOString(), user:S.user?.role||'?', action, entity, detail});
+    localStorage.setItem('cp:actlog', JSON.stringify(logs.slice(0,100))); // keep last 100
+  } catch{}
+}
+function getActivityLog(){
+  try { return JSON.parse(localStorage.getItem('cp:actlog')||'[]'); } catch { return []; }
+}
+
+// ── AI EVENT PARSER ───────────────────────────────────────────────────────────
+function renderAiEventParser(){
+  const wrap=el('div',{className:'card fade-in',style:{marginBottom:12,borderColor:'#1e3a5f'}});
+  wrap.appendChild(el('div',{style:{fontWeight:700,fontSize:13,color:'#60a5fa',marginBottom:8}},'🤖 Describe el plan en texto'));
+  wrap.appendChild(el('div',{style:{fontSize:11,color:'#64748b',marginBottom:10}},'Ejemplo: "Martina se queda con Eva del 15 al 22 de julio por vacaciones" o "Jorge tiene a Martina el puente de octubre"'));
+
+  const ta=el('textarea',{className:'input',style:{minHeight:70,resize:'vertical',marginBottom:10}});
+  ta.value=UI.aiParserText||'';
+  ta.placeholder='Describe el periodo de custodia…';
+  ta.addEventListener('input',e=>UI.aiParserText=e.target.value);
+  wrap.appendChild(ta);
+
+  if(UI.aiParserLoading){
+    wrap.appendChild(el('div',{style:{textAlign:'center',color:'#60a5fa',padding:'12px 0',fontSize:13}},'🤖 Procesando…'));
+  } else if(UI.aiParserResult){
+    const r=UI.aiParserResult;
+    const prev=el('div',{className:'card-dark',style:{marginBottom:10}});
+    prev.appendChild(el('div',{style:{fontSize:11,color:'#64748b',marginBottom:8}},'Resultado interpretado:'));
+    prev.append(
+      el('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:4}},[el('span',{style:{fontSize:12,color:'#94a3b8'}},'Con quién:'),el('span',{style:{fontSize:12,fontWeight:700,color:CUSTODY_TEXT[r.who]||'#f1f5f9'}},nameOf(r.who))]),
+      el('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:4}},[el('span',{style:{fontSize:12,color:'#94a3b8'}},'Desde:'),el('span',{style:{fontSize:12,fontWeight:700}},fmt(r.from))]),
+      el('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:4}},[el('span',{style:{fontSize:12,color:'#94a3b8'}},'Hasta:'),el('span',{style:{fontSize:12,fontWeight:700}},fmt(r.to))]),
+      el('div',{style:{display:'flex',justifyContent:'space-between'}},[el('span',{style:{fontSize:12,color:'#94a3b8'}},'Nota:'),el('span',{style:{fontSize:12,fontWeight:700}},r.note||'—')])
+    );
+    wrap.appendChild(prev);
+    const bRow=el('div',{style:{display:'flex',gap:8}});
+    bRow.append(
+      el('button',{className:'btn-primary',style:{flex:1},onClick:async()=>{
+        await dbAddEvent({...UI.aiParserResult,changeRequest:false});
+        UI.showAiParser=false;UI.aiParserText='';UI.aiParserResult=null;
+      }},'✓ Añadir al calendario'),
+      el('button',{className:'btn-ghost',style:{flex:1},onClick:()=>{UI.aiParserResult=null;render();}},'Reintentar')
+    );
+    wrap.appendChild(bRow);
+  } else {
+    wrap.appendChild(el('button',{className:'btn-primary',style:{width:'100%'},onClick:async()=>{
+      if(!UI.aiParserText.trim()) return;
+      UI.aiParserLoading=true;render();
+      try{
+        const yr=new Date().getFullYear();
+        const prompt=`Hoy es ${today()}. Analiza este texto sobre un plan de custodia y devuelve SOLO un objeto JSON con estos campos exactos: who (J=Jorge, E=Eva, ambos), from (YYYY-MM-DD), to (YYYY-MM-DD), note (string breve). Texto: "${UI.aiParserText}". Responde SOLO con el JSON, sin explicación ni markdown.`;
+        const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,messages:[{role:'user',content:prompt}]})});
+        const data=await resp.json();
+        const text=data.content?.[0]?.text||'';
+        const clean=text.replace(/```json|```/g,'').trim();
+        UI.aiParserResult=JSON.parse(clean);
+      }catch(e){
+        UI.aiParserResult={who:'J',from:today(),to:today(),note:'Error al interpretar — edita manualmente'};
+      }
+      UI.aiParserLoading=false;render();
+    }},'🤖 Interpretar con IA'));
+  }
+  return wrap;
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+function renderStats(){
+  const wrap=el('div',{});
+  const now=new Date();
+
+  // ── Custody distribution ──
+  const cd={J:0,E:0,ambos:0};
+  S.events.forEach(ev=>{
+    if(ev.changeStatus==='rechazado') return;
+    let d=new Date(ev.from+'T12:00:00'),end=new Date(ev.to+'T12:00:00');
+    while(d<=end){cd[ev.who]=(cd[ev.who]||0)+1;d.setDate(d.getDate()+1);}
+  });
+  const td=cd.J+cd.E+cd.ambos;
+
+  if(td>0){
+    const cc=el('div',{className:'card',style:{marginBottom:14}});
+    cc.appendChild(el('div',{style:{fontWeight:700,fontSize:14,marginBottom:12}},'📅 Distribución de custodia'));
+    // Bar
+    const bar=el('div',{style:{display:'flex',height:14,borderRadius:7,overflow:'hidden',marginBottom:12}});
+    [['J','#3b82f6'],['E','#8b5cf6'],['ambos','#10b981']].forEach(([k,c])=>{
+      if(cd[k]>0) bar.appendChild(el('div',{style:{flex:cd[k],background:c}}));
+    });
+    cc.appendChild(bar);
+    const statsRow=el('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}});
+    [['J','Jorge','#3b82f6'],['E','Eva','#8b5cf6'],['ambos','Ambos','#10b981']].forEach(([k,l,c])=>{
+      if(cd[k]===0) return;
+      const s=el('div',{style:{textAlign:'center',padding:'10px 6px',background:'#0f172a',borderRadius:10,border:'1px solid '+c+'22'}});
+      s.append(
+        el('div',{style:{fontWeight:800,fontSize:18,color:c}},`${Math.round(cd[k]/td*100)}%`),
+        el('div',{style:{fontSize:11,color:'#64748b',marginTop:2}},l),
+        el('div',{style:{fontSize:10,color:'#334155'}},`${cd[k]} días`)
+      );
+      statsRow.appendChild(s);
+    });
+    cc.appendChild(statsRow);
+    wrap.appendChild(cc);
+  }
+
+  // ── Monthly expenses last 6 months ──
+  const monthly={};
+  for(let i=5;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    monthly[key]={total:0,J:0,E:0,label:MONTHS[d.getMonth()]};
+  }
+  S.expenses.forEach(e=>{
+    const key=e.date.slice(0,7);
+    if(monthly[key]){
+      const a=parseFloat(e.amount||0);
+      monthly[key].total+=a;
+      monthly[key][e.paidBy]=(monthly[key][e.paidBy]||0)+a;
+    }
+  });
+  const entries=Object.entries(monthly);
+  const maxVal=Math.max(...entries.map(([,v])=>v.total),1);
+
+  if(entries.some(([,v])=>v.total>0)){
+    const ec=el('div',{className:'card',style:{marginBottom:14}});
+    ec.appendChild(el('div',{style:{fontWeight:700,fontSize:14,marginBottom:14}},'💶 Gastos últimos 6 meses'));
+    const chart=el('div',{style:{display:'flex',gap:6,alignItems:'flex-end',height:100,marginBottom:8}});
+    entries.forEach(([key,v])=>{
+      const col2=el('div',{style:{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:3}});
+      if(v.total>0) col2.appendChild(el('div',{style:{fontSize:9,color:'#64748b',textAlign:'center'}},`${Math.round(v.total)}€`));
+      const barWrap=el('div',{style:{width:'100%',display:'flex',flexDirection:'column',justifyContent:'flex-end',height:80,gap:1}});
+      // Stacked: Jorge on bottom, Eva on top
+      const jH=Math.round((v.J/maxVal)*78);
+      const eH=Math.round((v.E/maxVal)*78);
+      if(v.E>0) barWrap.appendChild(el('div',{style:{width:'100%',height:eH+'px',background:'#8b5cf6',borderRadius:'3px 3px 0 0',minHeight:v.E>0?3:0}}));
+      if(v.J>0) barWrap.appendChild(el('div',{style:{width:'100%',height:jH+'px',background:'#3b82f6',borderRadius:v.E>0?0:'3px 3px 0 0',minHeight:v.J>0?3:0}}));
+      if(v.total===0) barWrap.appendChild(el('div',{style:{width:'100%',height:4,background:'#1e293b',borderRadius:3}}));
+      col2.appendChild(barWrap);
+      col2.appendChild(el('div',{style:{fontSize:9,color:'#475569',textAlign:'center'}},v.label));
+      chart.appendChild(col2);
+    });
+    ec.appendChild(chart);
+    // Legend
+    const leg=el('div',{style:{display:'flex',gap:14,marginTop:4}});
+    [['#3b82f6','Jorge'],['#8b5cf6','Eva']].forEach(([c,l])=>{
+      const d=el('div',{style:{display:'flex',alignItems:'center',gap:5}});
+      d.append(el('div',{style:{width:10,height:10,borderRadius:2,background:c}}),el('span',{style:{fontSize:11,color:'#64748b'}},l));
+      leg.appendChild(d);
+    });
+    ec.appendChild(leg);
+    wrap.appendChild(ec);
+  }
+
+  // ── Expense breakdown ──
+  const byCat={};
+  S.expenses.forEach(e=>{byCat[e.cat]=(byCat[e.cat]||0)+parseFloat(e.amount||0);});
+  const topCats=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
+  const totalExp=S.expenses.reduce((s,e)=>s+parseFloat(e.amount||0),0);
+
+  if(topCats.length>0){
+    const bc=el('div',{className:'card',style:{marginBottom:14}});
+    bc.appendChild(el('div',{style:{fontWeight:700,fontSize:14,marginBottom:12}},'📊 Gastos por categoría'));
+    topCats.forEach(([cat,amt])=>{
+      const r=el('div',{style:{marginBottom:10}});
+      const t=el('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:4}});
+      t.append(el('span',{style:{fontSize:13}},cat),el('span',{style:{fontSize:13,fontWeight:700}},`${fmtM(amt)} (${Math.round(amt/totalExp*100)}%)`));
+      const barWrap=el('div',{style:{height:6,background:'#0f172a',borderRadius:3,overflow:'hidden'}});
+      barWrap.appendChild(el('div',{style:{height:'100%',background:'#3b82f6',width:`${amt/totalExp*100}%`,borderRadius:3}}));
+      r.append(t,barWrap);bc.appendChild(r);
+    });
+    // Totals
+    const pend=S.expenses.filter(e=>e.status==='pendiente').reduce((s,e)=>s+parseFloat(e.amount||0),0);
+    bc.appendChild(el('div',{style:{display:'flex',justifyContent:'space-between',paddingTop:10,borderTop:'1px solid #0f172a',marginTop:4}},[
+      el('div',{style:{textAlign:'center'}},[el('div',{style:{fontWeight:800,fontSize:16}},fmtM(totalExp)),el('div',{style:{fontSize:11,color:'#64748b'}},'Total')]),
+      el('div',{style:{textAlign:'center'}},[el('div',{style:{fontWeight:800,fontSize:16,color:'#fb923c'}},fmtM(pend)),el('div',{style:{fontSize:11,color:'#64748b'}},'Pendiente')]),
+      el('div',{style:{textAlign:'center'}},[el('div',{style:{fontWeight:800,fontSize:16,color:'#6ee7b7'}},fmtM(totalExp-pend)),el('div',{style:{fontSize:11,color:'#64748b'}},'Liquidado')]),
+    ]));
+    wrap.appendChild(bc);
+  }
+
+  // ── Agreements by category ──
+  const byAg={};
+  S.agreements.filter(a=>a.status==='activo').forEach(a=>{byAg[a.category]=(byAg[a.category]||0)+1;});
+  if(Object.keys(byAg).length>0){
+    const ac=el('div',{className:'card'});
+    ac.appendChild(el('div',{style:{fontWeight:700,fontSize:14,marginBottom:10}},'📝 Acuerdos activos por área'));
+    Object.entries(byAg).sort((a,b)=>b[1]-a[1]).forEach(([cat,n])=>{
+      const r=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0',borderBottom:'1px solid #0f172a'}});
+      r.append(el('span',{style:{fontSize:13}},cat),badge(String(n),'badge-J'));
+      ac.appendChild(r);
+    });
+    wrap.appendChild(ac);
+  }
+
+  if(td===0&&totalExp===0) wrap.appendChild(el('div',{style:{textAlign:'center',color:'#475569',padding:'40px 0',fontSize:13}},'Añade datos para ver las estadísticas'));
+
+  // Activity log
+  const logs=getActivityLog();
+  if(logs.length>0){
+    const lc=el('div',{className:'card',style:{marginTop:14}});
+    lc.appendChild(el('div',{style:{fontWeight:700,fontSize:14,marginBottom:12}},'🕓 Historial de actividad'));
+    logs.slice(0,20).forEach(l=>{
+      const r=el('div',{style:{display:'flex',gap:10,padding:'7px 0',borderBottom:'1px solid #0f172a',alignItems:'start'}});
+      r.append(
+        badge(l.user==='J'?'Jorge':'Eva','badge-'+(l.user==='J'?'J':'E')),
+        el('div',{style:{flex:1}},[
+          el('div',{style:{fontSize:12}},`${l.action} ${l.entity}: ${l.detail}`),
+          el('div',{style:{fontSize:10,color:'#475569',marginTop:2}},new Date(l.ts).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}))
+        ])
+      );
+      lc.appendChild(r);
+    });
+    if(logs.length>20) lc.appendChild(el('div',{style:{fontSize:11,color:'#475569',padding:'6px 0'}},`Mostrando 20 de ${logs.length} entradas`));
+    wrap.appendChild(lc);
+  }
+
+  return wrap;
+}
+
+// ── INTERCAMBIO ───────────────────────────────────────────────────────────────
+function renderIntercambio(){
+  const wrap=el('div',{});
+  if(!S.checklist) S.checklist=loadChecklist();
+
+  // Notification card
+  const notifCard=el('div',{className:'card',style:{marginBottom:14}});
+  notifCard.appendChild(el('div',{style:{fontWeight:700,fontSize:14,marginBottom:8}},'🔔 Recordatorios de cambio'));
+  if(!('Notification' in window)){
+    notifCard.appendChild(el('div',{style:{fontSize:12,color:'#475569'}},'Tu navegador no soporta notificaciones.'));
+  } else if(Notification.permission==='granted'){
+    notifCard.append(
+      el('div',{style:{fontSize:12,color:'#6ee7b7',marginBottom:6}},'✅ Notificaciones activadas'),
+      el('div',{style:{fontSize:11,color:'#64748b'}},'Recibirás un aviso la tarde anterior y la mañana del cambio de custodia.')
+    );
+  } else {
+    notifCard.append(
+      el('div',{style:{fontSize:12,color:'#64748b',marginBottom:10}},'Activa las notificaciones para recibir recordatorios automáticos de cada cambio de custodia en este dispositivo.'),
+      el('button',{className:'btn-primary',style:{width:'100%'},onClick:async()=>{
+        const ok=await requestNotifPermission();
+        S.notifEnabled=ok;
+        if(ok){ scheduleUpcomingNotifications(); render(); }
+      }},'Activar notificaciones en este móvil')
+    );
+  }
+  wrap.appendChild(notifCard);
+
+  // Alert config
+  if(Notification.permission==='granted'){
+    const ac=el('div',{className:'card',style:{marginBottom:14}});
+    const ach=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}});
+    ach.append(
+      el('div',{},[
+        el('div',{style:{fontWeight:700,fontSize:14}},'⚙️ Configurar alertas'),
+        el('div',{style:{fontSize:11,color:'#64748b',marginTop:2}},'¿Con cuántos días de antelación quieres el aviso?')
+      ]),
+      el('button',{className:'btn-ghost',style:{fontSize:11},onClick:()=>{UI.showAlertConfig=!UI.showAlertConfig;render();}},UI.showAlertConfig?'Cerrar':'Editar')
+    );
+    ac.appendChild(ach);
+    if(UI.showAlertConfig){
+      const optWrap=el('div',{style:{display:'flex',gap:8}});
+      [1,2,3,7].forEach(d=>{
+        const active=UI.alertDaysBefore===d;
+        optWrap.appendChild(el('button',{
+          style:{flex:1,padding:'10px 4px',borderRadius:9,border:'1px solid',borderColor:active?'#3b82f6':'#334155',background:active?'#1e3a5f':'transparent',color:active?'#60a5fa':'#64748b',fontWeight:active?700:400,fontSize:12},
+          onClick:()=>{saveAlertConfig(d);render();}
+        },d===1?'1 día':d===7?'1 semana':`${d} días`));
+      });
+      ac.appendChild(optWrap);
+      ac.appendChild(el('div',{style:{fontSize:11,color:'#475569',marginTop:10}},`Aviso actual: ${UI.alertDaysBefore===1?'1 día':UI.alertDaysBefore===7?'1 semana':UI.alertDaysBefore+' días'} antes + mañana del cambio`));
+    } else {
+      ac.appendChild(el('div',{style:{fontSize:13,color:'#94a3b8'}},`Avisas ${UI.alertDaysBefore===1?'1 día':UI.alertDaysBefore===7?'1 semana':UI.alertDaysBefore+' días'} antes de cada cambio`));
+    }
+    wrap.appendChild(ac);
+  }
+
+  // Next handover info
+  const todayStr=today();
+  const nextEv=[...S.events].filter(ev=>ev.from>=todayStr&&ev.changeStatus!=='rechazado').sort((a,b)=>a.from.localeCompare(b.from))[0];
+  if(nextEv){
+    const nc=el('div',{className:'today-card',style:{marginBottom:14}});
+    nc.append(
+      el('div',{style:{fontSize:11,color:'#94a3b8',marginBottom:6,textTransform:'uppercase',letterSpacing:.5}},'Próximo intercambio'),
+      el('div',{style:{fontWeight:800,fontSize:20,color:CUSTODY_TEXT[nextEv.who],marginBottom:4}},`Con ${nameOf(nextEv.who)}`),
+      el('div',{style:{fontSize:13,color:'#94a3b8'}},`${fmt(nextEv.from)} · ${daysUntil(nextEv.from)===0?'HOY':daysUntil(nextEv.from)===1?'Mañana':'En '+daysUntil(nextEv.from)+' días'}`)
+    );
+    wrap.appendChild(nc);
+  }
+
+  // Checklist
+  const cc=el('div',{className:'card'});
+  const ch=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}});
+  const done=S.checklist.filter(i=>i.done).length;
+  ch.append(
+    el('div',{},[
+      el('div',{style:{fontWeight:700,fontSize:14}},'✅ Checklist de intercambio'),
+      el('div',{style:{fontSize:11,color:'#64748b',marginTop:2}},`${done}/${S.checklist.length} completados`)
+    ]),
+    el('button',{className:'btn-ghost',style:{fontSize:11},onClick:()=>{
+      S.checklist=S.checklist.map(i=>({...i,done:false}));
+      saveChecklist(S.checklist);render();
+    }},'Resetear')
+  );
+  cc.appendChild(ch);
+
+  // Progress bar
+  const prog=el('div',{style:{height:6,background:'#1e293b',borderRadius:3,overflow:'hidden',marginBottom:14}});
+  prog.appendChild(el('div',{style:{height:'100%',background:'#3b82f6',width:`${S.checklist.length?done/S.checklist.length*100:0}%`,borderRadius:3,transition:'width .3s'}}));
+  cc.appendChild(prog);
+
+  S.checklist.forEach((item,idx)=>{
+    const r=el('div',{style:{display:'flex',alignItems:'center',gap:10,padding:'9px 0',borderBottom:'1px solid #0f172a'}});
+    const chk=el('button',{
+      style:{width:22,height:22,borderRadius:5,border:'1px solid',borderColor:item.done?'#3b82f6':'#334155',background:item.done?'#3b82f6':'transparent',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:12},
+      onClick:()=>{S.checklist[idx].done=!S.checklist[idx].done;saveChecklist(S.checklist);render();}
+    },item.done?'✓':'');
+    r.append(chk,el('div',{style:{flex:1,fontSize:13,color:item.done?'#475569':'#e2e8f0',textDecoration:item.done?'line-through':'none'}},item.text));
+    // Delete button
+    r.appendChild(el('button',{style:{background:'none',border:'none',color:'#334155',fontSize:12,cursor:'pointer'},onClick:()=>{S.checklist.splice(idx,1);saveChecklist(S.checklist);render();}},'✕'));
+    cc.appendChild(r);
+  });
+
+  // Add item
+  const addRow=el('div',{style:{display:'flex',gap:8,marginTop:12}});
+  const newInp=el('input',{className:'input',placeholder:'Añadir elemento al checklist…',style:{flex:1}});
+  newInp.value=UI.checklistItem||'';
+  newInp.addEventListener('input',e=>UI.checklistItem=e.target.value);
+  newInp.addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&newInp.value.trim()){
+      S.checklist.push({id:Date.now(),text:newInp.value.trim(),done:false});
+      saveChecklist(S.checklist);UI.checklistItem='';render();
+    }
+  });
+  addRow.append(newInp,el('button',{className:'btn-primary',style:{flexShrink:0,padding:'10px 14px'},onClick:()=>{
+    if(newInp.value.trim()){
+      S.checklist.push({id:Date.now(),text:newInp.value.trim(),done:false});
+      saveChecklist(S.checklist);UI.checklistItem='';render();
+    }
+  }},'+'));
+  cc.appendChild(addRow);
+  wrap.appendChild(cc);
+  return wrap;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+UI.weekOffset = 0;
+UI.loginRole  = 'J';
+// Timeout fallback: if still loading after 10s, force render
+setTimeout(()=>{
+  const app=document.getElementById('app');
+  if(app && app.textContent.includes('Cargando')){
+    S.checklist = S.checklist||loadChecklist();
+    render();
+    const d=document.createElement('div');
+    d.style.cssText='position:fixed;top:0;left:0;right:0;background:#422006;color:#fed7aa;padding:8px;font-size:11px;z-index:9999;text-align:center';
+    d.textContent='⚠️ Carga lenta de datos — funcionando en modo limitado';
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),5000);
+  }
+},10000);
+
+(async()=>{
+  try{ await loadAll(); } catch(e){ console.error('loadAll failed:',e); }
+  S.checklist = loadChecklist();
+  S.notifEnabled = ('Notification' in window && Notification.permission==='granted');
+  document.body.className = UI.theme;
+  render();
+  try{ scheduleUpcomingNotificationsWithConfig(UI.alertDaysBefore); }catch(e){}
+})();
+</script>
+</body>
+</html>
